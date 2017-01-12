@@ -1,0 +1,28 @@
+{
+	"name": "68publishers/user",
+	"description": "Provides user management for your Nette project. Compatible with Doctrine ORM.",
+	"keywords": ["68publishers", "user", "management"],
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Vojtěch Lacina", "email": "MoraviaD1@gmail.com"
+		}
+	],
+	"require": {
+		"php": "~7.0",
+		"nette/utils": "^2.4",
+		"nette/forms": "^2.4"
+	},
+	"require-dev": {
+		"friendsofphp/php-cs-fixer": "^2.0",
+		"nette/tester": "^1.7"
+	},
+	"autoload": {
+		"classmap": ["src/"],
+		"files": []
+	},
+	"autoload-dev": {
+		"classmap": ["tests/"],
+		"files": []
+	}
+}
