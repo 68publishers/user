@@ -25,7 +25,7 @@
 		"68publishers/doctrine-persistence": "^0.1",
 		"68publishers/smart-nette-component": "^0.1",
 		"kdyby/doctrine": "^3.0",
-		"kdyby/translation": "^2.6",
+		"kdyby/translation": "~2.4",
 		"ramsey/uuid": "^3.8"
 	},
 	"require-dev": {
