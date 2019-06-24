@@ -1,21 +1,41 @@
 {
 	"name": "68publishers/user",
-	"description": "Provides user management for your Nette project. Compatible with Doctrine ORM.",
+	"description": "Provides user management for your Nette project. Compatible with kdyby/doctrine and kdyby/translation.",
 	"keywords": ["68publishers", "user", "management"],
 	"license": "MIT",
 	"authors": [
 		{
-			"name": "Vojtěch Lacina", "email": "MoraviaD1@gmail.com"
+			"name": "Vojtěch Lacina",
+			"email": "MoraviaD1@gmail.com"
+		},
+		{
+			"name": "Tomáš Glawaty",
+			"email": "tomasglawaty@icloud.com"
 		}
 	],
 	"require": {
-		"php": "~7.0",
-		"nette/utils": "^2.4",
-		"nette/forms": "^2.4"
+		"php": "~7.1",
+		"nette/di": "~2.4",
+		"nette/utils": "~2.4",
+		"nette/security": "~2.4",
+		"nette/forms": "~2.4",
+		"nette/neon": "~2.4",
+		"nette/application": "~2.4",
+		"tracy/tracy": "~2.4",
+		"68publishers/doctrine-persistence": "^0.1",
+		"68publishers/smart-nette-component": "^0.1",
+		"kdyby/doctrine": "^3.0",
+		"kdyby/translation": "~2.4",
+		"ramsey/uuid": "^3.8"
 	},
 	"require-dev": {
 		"friendsofphp/php-cs-fixer": "^2.0",
-		"nette/tester": "^1.7"
+		"nette/tester": "^1.7",
+		"contributte/mailing": "^0.2",
+		"psr/log": "^1.0"
+	},
+	"suggest": {
+		"contributte/mailing": "If you want to use default mail sender."
 	},
 	"autoload": {
 		"classmap": ["src/"],
