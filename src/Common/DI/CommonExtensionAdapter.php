@@ -108,8 +108,8 @@ final class CommonExtensionAdapter extends SixtyEightPublishers\User\DI\Abstract
 
 		/** @var \Nette\DI\ServiceDefinition[] $translatableServices */
 		$translatableServices = array_filter($builder->getDefinitions(), function (Nette\DI\ServiceDefinition $def) {
-			return is_a($def->getImplement(), SixtyEightPublishers\User\Common\Translator\ITranslatableService::class, TRUE)
-				|| ($def->getImplementMode() !== $def::IMPLEMENT_MODE_GET && is_a($def->getType(), SixtyEightPublishers\User\Common\Translator\ITranslatableService::class, TRUE));
+			return is_a($def->getImplement(), SixtyEightPublishers\User\Common\Translator\ITranslatorAware::class, TRUE)
+				|| ($def->getImplementMode() !== $def::IMPLEMENT_MODE_GET && is_a($def->getType(), SixtyEightPublishers\User\Common\Translator\ITranslatorAware::class, TRUE));
 		});
 
 		foreach ($translatableServices as $translatableService) {
