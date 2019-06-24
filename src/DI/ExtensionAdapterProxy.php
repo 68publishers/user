@@ -49,6 +49,8 @@ final class ExtensionAdapterProxy implements
 		} catch (SixtyEightPublishers\User\Common\Exception\StopPropagationException $e) {
 			$this->propagationStopped = TRUE;
 		}
+
+		return NULL;
 	}
 
 	/**
