@@ -29,7 +29,7 @@ final class IdentityReference implements Nette\Security\IIdentity
 	/**
 	 * @return string
 	 */
-	public function getClassName() : string
+	public function getClassName(): string
 	{
 		return $this->className;
 	}
@@ -47,7 +47,7 @@ final class IdentityReference implements Nette\Security\IIdentity
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getRoles() : array
+	public function getRoles(): array
 	{
 		return [];
 	}

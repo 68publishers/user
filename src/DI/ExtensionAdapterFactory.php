@@ -14,12 +14,17 @@ final class ExtensionAdapterFactory
 	/** @var \Nette\DI\ContainerBuilder  */
 	private $builder;
 
+	/** @var \ArrayObject  */
+	private $sharedData;
+
 	/**
 	 * @param \Nette\DI\ContainerBuilder $builder
+	 * @param \ArrayObject               $sharedData
 	 */
-	public function __construct(Nette\DI\ContainerBuilder $builder)
+	public function __construct(Nette\DI\ContainerBuilder $builder, \ArrayObject $sharedData)
 	{
 		$this->builder = $builder;
+		$this->sharedData = $sharedData;
 	}
 
 	/**
@@ -30,7 +35,7 @@ final class ExtensionAdapterFactory
 	 * @return \SixtyEightPublishers\User\DI\IExtensionAdapter
 	 * @throws \SixtyEightPublishers\User\Common\Exception\InvalidArgumentException
 	 */
-	public function create(string $className, string $name, array $config) : IExtensionAdapter
+	public function create(string $className, string $name, array $config): IExtensionAdapter
 	{
 		if (!is_subclass_of($className, IExtensionAdapter::class, TRUE)) {
 			throw new SixtyEightPublishers\User\Common\Exception\InvalidArgumentException(sprintf(
@@ -40,7 +45,7 @@ final class ExtensionAdapterFactory
 		}
 
 		return new ExtensionAdapterProxy(function () use ($className, $name, $config) {
-			return new $className($this->builder, $name, $config);
+			return new $className($this->builder, $name, $config, $this->sharedData);
 		});
 	}
 }

@@ -12,15 +12,15 @@ class GetUserByEmailQueryFactory implements IGetUserByEmailQueryFactory
 {
 	use Nette\SmartObject;
 
-	/** @var \SixtyEightPublishers\User\Common\UserMappingFields  */
-	private $fields;
+	/** @var \SixtyEightPublishers\User\Common\UserMapping  */
+	private $mapping;
 
 	/**
-	 * @param \SixtyEightPublishers\User\Common\UserMappingFields $fields
+	 * @param \SixtyEightPublishers\User\Common\UserMapping $mapping
 	 */
-	public function __construct(SixtyEightPublishers\User\Common\UserMappingFields $fields)
+	public function __construct(SixtyEightPublishers\User\Common\UserMapping $mapping)
 	{
-		$this->fields = $fields;
+		$this->mapping = $mapping;
 	}
 
 	/********* interface \SixtyEightPublishers\User\ForgotPassword\Query\IGetUserByEmailQueryFactory *********/
@@ -28,12 +28,12 @@ class GetUserByEmailQueryFactory implements IGetUserByEmailQueryFactory
 	/**
 	 * {@inheritdoc}
 	 */
-	public function create(Doctrine\ORM\EntityManagerInterface $em, string $email) : Doctrine\ORM\Query
+	public function create(Doctrine\ORM\EntityManagerInterface $em, string $email): Doctrine\ORM\Query
 	{
 		return $em->createQueryBuilder()
 			->select('u')
 			->from(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IUser::class, 'u')
-			->where('u.' . $this->fields[SixtyEightPublishers\User\Common\UserMappingFields::FILED_EMAIL] . ' = :email')
+			->where('u.' . $this->mapping[SixtyEightPublishers\User\Common\UserMapping::FILED_EMAIL] . ' = :email')
 			->setParameter('email', $email)
 			->setMaxResults(1)
 			->getQuery();

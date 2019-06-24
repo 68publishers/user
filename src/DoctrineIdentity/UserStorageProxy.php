@@ -35,7 +35,7 @@ final class UserStorageProxy implements Nette\Security\IUserStorage
 	 * @return \SixtyEightPublishers\User\DoctrineIdentity\UserStorageProxy
 	 * @throws \SixtyEightPublishers\User\DoctrineIdentity\Exception\UnimplementedMethodException
 	 */
-	public function setNamespace(string $namespace) : self
+	public function setNamespace(string $namespace): self
 	{
 		if (!is_callable([ $this->userStorage, 'setNamespace' ])) {
 			throw Exception\UnimplementedMethodException::unimplementedMethod(get_class($this->userStorage), 'setNamespace');
@@ -54,7 +54,7 @@ final class UserStorageProxy implements Nette\Security\IUserStorage
 	 * @return string
 	 * @throws \SixtyEightPublishers\User\DoctrineIdentity\Exception\UnimplementedMethodException
 	 */
-	public function getNamespace() : string
+	public function getNamespace(): string
 	{
 		if (!is_callable([ $this->userStorage, 'getNamespace' ])) {
 			throw Exception\UnimplementedMethodException::unimplementedMethod(get_class($this->userStorage), 'getNamespace');
@@ -69,7 +69,7 @@ final class UserStorageProxy implements Nette\Security\IUserStorage
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setAuthenticated($state) : self
+	public function setAuthenticated($state): self
 	{
 		$this->userStorage->setAuthenticated($state);
 
@@ -79,7 +79,7 @@ final class UserStorageProxy implements Nette\Security\IUserStorage
 	/**
 	 * {@inheritdoc}
 	 */
-	public function isAuthenticated() : bool
+	public function isAuthenticated(): bool
 	{
 		return $this->userStorage->isAuthenticated();
 	}
@@ -87,7 +87,7 @@ final class UserStorageProxy implements Nette\Security\IUserStorage
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setIdentity(?Nette\Security\IIdentity $identity = NULL) : self
+	public function setIdentity(?Nette\Security\IIdentity $identity = NULL): self
 	{
 		if (NULL !== $identity) {
 			/** @noinspection PhpDeprecationInspection */
@@ -110,7 +110,7 @@ final class UserStorageProxy implements Nette\Security\IUserStorage
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getIdentity() : ?Nette\Security\IIdentity
+	public function getIdentity(): ?Nette\Security\IIdentity
 	{
 		$identity = $this->userStorage->getIdentity();
 
@@ -124,7 +124,7 @@ final class UserStorageProxy implements Nette\Security\IUserStorage
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setExpiration($time, $flags = 0) : self
+	public function setExpiration($time, $flags = 0): self
 	{
 		$this->userStorage->setExpiration($time, $flags);
 
@@ -134,7 +134,7 @@ final class UserStorageProxy implements Nette\Security\IUserStorage
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getLogoutReason() : ?int
+	public function getLogoutReason(): ?int
 	{
 		return $this->userStorage->getLogoutReason();
 	}

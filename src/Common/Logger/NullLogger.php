@@ -15,21 +15,21 @@ final class NullLogger implements ILogger
 	/**
 	 * {@inheritdoc}
 	 */
-	public function error(string $message) : void
+	public function error(string $message): void
 	{
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function notice(string $message) : void
+	public function notice(string $message): void
 	{
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function info(string $message) : void
+	public function info(string $message): void
 	{
 	}
 }

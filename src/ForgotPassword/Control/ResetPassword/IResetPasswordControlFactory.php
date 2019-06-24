@@ -13,5 +13,5 @@ interface IResetPasswordControlFactory
 	 *
 	 * @return \SixtyEightPublishers\User\ForgotPassword\Control\ResetPassword\ResetPasswordControl
 	 */
-	public function create(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $passwordRequest) : ResetPasswordControl;
+	public function create(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $passwordRequest): ResetPasswordControl;
 }

@@ -17,7 +17,7 @@ final class DoctrineIdentityExtensionAdapter extends SixtyEightPublishers\User\D
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function processConfig(array $config) : array
+	protected function processConfig(array $config, \ArrayObject $sharedData): array
 	{
 		Nette\Utils\Validators::assertField($config, 'enabled', 'bool');
 
@@ -31,7 +31,7 @@ final class DoctrineIdentityExtensionAdapter extends SixtyEightPublishers\User\D
 	/**
 	 * {@inheritdoc}
 	 */
-	public function loadConfiguration() : void
+	public function loadConfiguration(): void
 	{
 		$this->getContainerBuilder()
 			->addDefinition($this->prefix('user_storage'))
@@ -42,7 +42,7 @@ final class DoctrineIdentityExtensionAdapter extends SixtyEightPublishers\User\D
 	/**
 	 * {@inheritdoc}
 	 */
-	public function beforeCompile() : void
+	public function beforeCompile(): void
 	{
 		$builder = $this->getContainerBuilder();
 

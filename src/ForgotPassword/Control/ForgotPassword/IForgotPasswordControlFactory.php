@@ -9,5 +9,5 @@ interface IForgotPasswordControlFactory
 	/**
 	 * @return \SixtyEightPublishers\User\ForgotPassword\Control\ForgotPassword\ForgotPasswordControl
 	 */
-	public function create() : ForgotPasswordControl;
+	public function create(): ForgotPasswordControl;
 }

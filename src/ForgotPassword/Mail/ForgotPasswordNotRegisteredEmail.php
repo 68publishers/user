@@ -29,7 +29,7 @@ final class ForgotPasswordNotRegisteredEmail implements IForgotPasswordNotRegist
 	/**
 	 * {@inheritdoc}
 	 */
-	public function send(string $email) : void
+	public function send(string $email): void
 	{
 		$this->mailSender->send(
 			self::NAME,

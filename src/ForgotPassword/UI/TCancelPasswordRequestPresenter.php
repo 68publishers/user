@@ -23,14 +23,14 @@ trait TCancelPasswordRequestPresenter
 	 *
 	 * @return void
 	 */
-	abstract protected function triggerSuccess(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $passwordRequest) : void;
+	abstract protected function triggerSuccess(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $passwordRequest): void;
 
 	/**
 	 * @param \SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestProcessException $e
 	 *
 	 * @return void
 	 */
-	abstract protected function triggerError(SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestProcessException $e) : void;
+	abstract protected function triggerError(SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestProcessException $e): void;
 
 	/**
 	 * @internal
@@ -39,7 +39,7 @@ trait TCancelPasswordRequestPresenter
 	 *
 	 * @return void
 	 */
-	public function injectPasswordRequestManager(SixtyEightPublishers\User\ForgotPassword\PasswordRequest\IPasswordRequestManager $passwordRequestManager) : void
+	public function injectPasswordRequestManager(SixtyEightPublishers\User\ForgotPassword\PasswordRequest\IPasswordRequestManager $passwordRequestManager): void
 	{
 		$this->passwordRequestManager = $passwordRequestManager;
 	}
@@ -47,7 +47,7 @@ trait TCancelPasswordRequestPresenter
 	/**
 	 * {@inheritdoc}
 	 */
-	public function startup() : void
+	public function startup(): void
 	{
 		/** @noinspection PhpUndefinedClassInspection */
 		parent::startup();
@@ -62,8 +62,9 @@ trait TCancelPasswordRequestPresenter
 	 * @param string $rid PasswordRequest UUID
 	 *
 	 * @return void
+	 * @throws \Nette\Application\BadRequestException
 	 */
-	public function actionDefault(string $uid, string $rid) : void
+	public function actionDefault(string $uid, string $rid): void
 	{
 		try {
 			$this->passwordRequestManager->cancel(

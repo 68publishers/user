@@ -23,7 +23,7 @@ trait TResetPasswordPresenter
 	 *
 	 * @return void
 	 */
-	abstract protected function triggerPasswordRequestNotFound(SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestProcessException $e) : void;
+	abstract protected function triggerPasswordRequestNotFound(SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestProcessException $e): void;
 
 	/**
 	 * @internal
@@ -32,7 +32,7 @@ trait TResetPasswordPresenter
 	 *
 	 * @return void
 	 */
-	public function injectPasswordRequestManager(SixtyEightPublishers\User\ForgotPassword\PasswordRequest\IPasswordRequestManager $passwordRequestManager) : void
+	public function injectPasswordRequestManager(SixtyEightPublishers\User\ForgotPassword\PasswordRequest\IPasswordRequestManager $passwordRequestManager): void
 	{
 		$this->passwordRequestManager = $passwordRequestManager;
 	}
@@ -44,7 +44,7 @@ trait TResetPasswordPresenter
 	 *
 	 * @return void
 	 */
-	public function injectResetPasswordControlFactory(SixtyEightPublishers\User\ForgotPassword\Control\ResetPassword\IResetPasswordControlFactory $resetPasswordControlFactory) : void
+	public function injectResetPasswordControlFactory(SixtyEightPublishers\User\ForgotPassword\Control\ResetPassword\IResetPasswordControlFactory $resetPasswordControlFactory): void
 	{
 		$this->resetPasswordControlFactory = $resetPasswordControlFactory;
 	}
@@ -54,8 +54,9 @@ trait TResetPasswordPresenter
 	 * @param string $rid PasswordRequest UUID
 	 *
 	 * @return void
+	 * @throws \Nette\Application\BadRequestException
 	 */
-	public function actionDefault(string $uid, string $rid) : void
+	public function actionDefault(string $uid, string $rid): void
 	{
 		try {
 			$this->passwordRequest = $this->passwordRequestManager->findRequest($uid, $rid);
@@ -69,7 +70,7 @@ trait TResetPasswordPresenter
 	/**
 	 * @return \SixtyEightPublishers\User\ForgotPassword\Control\ResetPassword\ResetPasswordControl
 	 */
-	protected function createResetPasswordControl() : SixtyEightPublishers\User\ForgotPassword\Control\ResetPassword\ResetPasswordControl
+	protected function createResetPasswordControl(): SixtyEightPublishers\User\ForgotPassword\Control\ResetPassword\ResetPasswordControl
 	{
 		if (!$this->passwordRequest instanceof SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest) {
 			throw new Nette\InvalidStateException('Password Request is not set.');

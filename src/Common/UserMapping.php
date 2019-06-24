@@ -6,12 +6,15 @@ namespace SixtyEightPublishers\User\Common;
 
 use SixtyEightPublishers;
 
-final class UserMappingFields implements \ArrayAccess
+final class UserMapping implements \ArrayAccess
 {
 	const 	FIELD_ID = 'id',
 			FILED_EMAIL = 'email',
 			FIELD_PASSWORD = 'password',
 			FIELD_LOGIN = 'login';
+
+	/** @var string  */
+	private $className;
 
 	/** @var array  */
 	private $fields = [
@@ -22,11 +25,21 @@ final class UserMappingFields implements \ArrayAccess
 	];
 
 	/**
-	 * @param array $fields
+	 * @param string $className
+	 * @param array  $fields
 	 */
-	public function __construct(array $fields)
+	public function __construct(string $className, array $fields)
 	{
+		$this->className = $className;
 		$this->fields = array_merge($this->fields, $fields);
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getClassName(): string
+	{
+		return $this->className;
 	}
 
 	/**
@@ -34,7 +47,7 @@ final class UserMappingFields implements \ArrayAccess
 	 *
 	 * @return bool
 	 */
-	public function __isset($name) : bool
+	public function __isset($name): bool
 	{
 		return isset($this->fields[$name]);
 	}
@@ -44,7 +57,7 @@ final class UserMappingFields implements \ArrayAccess
 	 *
 	 * @return string
 	 */
-	public function __get($name) : string
+	public function __get($name): string
 	{
 		if (!$this->__isset($name)) {
 			throw new SixtyEightPublishers\User\Common\Exception\InvalidArgumentException(sprintf(
@@ -61,7 +74,7 @@ final class UserMappingFields implements \ArrayAccess
 	/**
 	 * {@inheritdoc}
 	 */
-	public function offsetExists($offset) : bool
+	public function offsetExists($offset): bool
 	{
 		return $this->__isset($offset);
 	}
@@ -69,7 +82,7 @@ final class UserMappingFields implements \ArrayAccess
 	/**
 	 * {@inheritdoc}
 	 */
-	public function offsetGet($offset) : string
+	public function offsetGet($offset): string
 	{
 		return $this->__get($offset);
 	}

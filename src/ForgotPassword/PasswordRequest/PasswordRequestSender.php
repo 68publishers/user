@@ -47,7 +47,7 @@ class PasswordRequestSender implements IPasswordRequestSender
 	 *
 	 * @return void
 	 */
-	protected function logSentEmail(string $email, string $mailClassName) : void
+	protected function logSentEmail(string $email, string $mailClassName): void
 	{
 		$this->logger->info(sprintf(
 			'Mail %s was successfully sent to %s',
@@ -61,7 +61,7 @@ class PasswordRequestSender implements IPasswordRequestSender
 	 *
 	 * @return void
 	 */
-	protected function logError(\Throwable $e) : void
+	protected function logError(\Throwable $e): void
 	{
 		$this->logger->error((string) $e);
 	}
@@ -71,7 +71,7 @@ class PasswordRequestSender implements IPasswordRequestSender
 	 *
 	 * @return void
 	 */
-	protected function sendForgotPasswordResetEmail(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $request) : void
+	protected function sendForgotPasswordResetEmail(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $request): void
 	{
 		$this->forgotPasswordResetEmail->send($request);
 		$this->logSentEmail($request->getUser()->getEmail(), get_class($this->forgotPasswordResetEmail));
@@ -82,7 +82,7 @@ class PasswordRequestSender implements IPasswordRequestSender
 	 *
 	 * @return void
 	 */
-	protected function sendForgotPasswordNotRegisteredEmail(string $email) : void
+	protected function sendForgotPasswordNotRegisteredEmail(string $email): void
 	{
 		$this->forgotPasswordNotRegisteredEmail->send($email);
 		$this->logSentEmail($email, get_class($this->forgotPasswordNotRegisteredEmail));
@@ -95,7 +95,7 @@ class PasswordRequestSender implements IPasswordRequestSender
 	 *
 	 * @return \SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest
 	 */
-	public function send(string $email) : ?SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest
+	public function send(string $email): ?SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest
 	{
 		try {
 			$this->forgotPasswordResetEmail->send(

@@ -14,7 +14,7 @@ final class UnimplementedMethodException extends \BadMethodCallException impleme
 	 *
 	 * @return \SixtyEightPublishers\User\DoctrineIdentity\Exception\UnimplementedMethodException
 	 */
-	public static function unimplementedMethod(string $className, string $method) : self
+	public static function unimplementedMethod(string $className, string $method): self
 	{
 		return new static(sprintf(
 			'Called method %s::%s() is not implemented.',

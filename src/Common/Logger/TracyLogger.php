@@ -16,7 +16,7 @@ final class TracyLogger implements ILogger
 	/**
 	 * {@inheritdoc}
 	 */
-	public function error(string $message) : void
+	public function error(string $message): void
 	{
 		Tracy\Debugger::log($message, Tracy\ILogger::ERROR);
 	}
@@ -24,7 +24,7 @@ final class TracyLogger implements ILogger
 	/**
 	 * {@inheritdoc}
 	 */
-	public function notice(string $message) : void
+	public function notice(string $message): void
 	{
 		Tracy\Debugger::log($message, Tracy\ILogger::WARNING);
 	}
@@ -32,7 +32,7 @@ final class TracyLogger implements ILogger
 	/**
 	 * {@inheritdoc}
 	 */
-	public function info(string $message) : void
+	public function info(string $message): void
 	{
 		Tracy\Debugger::log($message, Tracy\ILogger::INFO);
 	}

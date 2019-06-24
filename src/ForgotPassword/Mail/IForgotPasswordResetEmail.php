@@ -13,5 +13,5 @@ interface IForgotPasswordResetEmail
 	 *
 	 * @return void
 	 */
-	public function send(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $request) : void;
+	public function send(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $request): void;
 }

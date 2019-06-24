@@ -9,5 +9,5 @@ interface IEmailAccessor
 	/**
 	 * @return string
 	 */
-	public function getEmail() : string;
+	public function getEmail(): string;
 }
