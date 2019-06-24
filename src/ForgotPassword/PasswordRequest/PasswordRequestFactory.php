@@ -6,7 +6,6 @@ namespace SixtyEightPublishers\User\ForgotPassword\PasswordRequest;
 
 use Nette;
 use Doctrine;
-use PersistenceBundle;
 use SixtyEightPublishers;
 
 class PasswordRequestFactory implements IPasswordRequestFactory
@@ -16,7 +15,7 @@ class PasswordRequestFactory implements IPasswordRequestFactory
 	/** @var \Doctrine\ORM\EntityManagerInterface  */
 	private $em;
 
-	/** @var \PersistenceBundle\Transaction\ITransactionFactory  */
+	/** @var \SixtyEightPublishers\DoctrinePersistence\Transaction\ITransactionFactory  */
 	private $transactionFactory;
 
 	/** @var \SixtyEightPublishers\User\ForgotPassword\Query\IGetUserByEmailQueryFactory  */
@@ -27,13 +26,13 @@ class PasswordRequestFactory implements IPasswordRequestFactory
 
 	/**
 	 * @param \Doctrine\ORM\EntityManagerInterface                                                      $em
-	 * @param \PersistenceBundle\Transaction\ITransactionFactory                                        $transactionFactory
+	 * @param \SixtyEightPublishers\DoctrinePersistence\Transaction\ITransactionFactory                 $transactionFactory
 	 * @param \SixtyEightPublishers\User\ForgotPassword\Query\IGetUserByEmailQueryFactory               $getUserByEmailQueryFactory
 	 * @param \SixtyEightPublishers\User\ForgotPassword\Query\ICancelPasswordRequestsByUserQueryFactory $cancelPasswordRequestsByUserQueryFactory
 	 */
 	public function __construct(
 		Doctrine\ORM\EntityManagerInterface $em,
-		PersistenceBundle\Transaction\ITransactionFactory $transactionFactory,
+		SixtyEightPublishers\DoctrinePersistence\Transaction\ITransactionFactory $transactionFactory,
 		SixtyEightPublishers\User\ForgotPassword\Query\IGetUserByEmailQueryFactory $getUserByEmailQueryFactory,
 		SixtyEightPublishers\User\ForgotPassword\Query\ICancelPasswordRequestsByUserQueryFactory $cancelPasswordRequestsByUserQueryFactory
 	) {
