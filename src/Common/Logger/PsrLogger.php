@@ -27,7 +27,7 @@ final class PsrLogger implements ILogger
 	/**
 	 * {@inheritdoc}
 	 */
-	public function error(string $message) : void
+	public function error(string $message): void
 	{
 		$this->logger->error($message);
 	}
@@ -35,7 +35,7 @@ final class PsrLogger implements ILogger
 	/**
 	 * {@inheritdoc}
 	 */
-	public function notice(string $message) : void
+	public function notice(string $message): void
 	{
 		$this->logger->notice($message);
 	}
@@ -43,7 +43,7 @@ final class PsrLogger implements ILogger
 	/**
 	 * {@inheritdoc}
 	 */
-	public function info(string $message) : void
+	public function info(string $message): void
 	{
 		$this->logger->info($message);
 	}

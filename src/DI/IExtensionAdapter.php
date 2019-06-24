@@ -11,18 +11,18 @@ interface IExtensionAdapter
 	/**
 	 * @return array
 	 */
-	public static function getDefaults() : array;
+	public static function getDefaults(): array;
 
 	/**
 	 * @return void
 	 */
-	public function loadConfiguration() : void;
+	public function loadConfiguration(): void;
 
 
 	/**
 	 * @return void
 	 */
-	public function beforeCompile() : void;
+	public function beforeCompile(): void;
 
 
 	/**
@@ -30,5 +30,5 @@ interface IExtensionAdapter
 	 *
 	 * @return void
 	 */
-	public function afterCompile(Nette\PhpGenerator\ClassType $class) : void;
+	public function afterCompile(Nette\PhpGenerator\ClassType $class): void;
 }

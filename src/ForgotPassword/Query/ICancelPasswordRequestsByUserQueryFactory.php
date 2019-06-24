@@ -15,5 +15,5 @@ interface ICancelPasswordRequestsByUserQueryFactory
 	 *
 	 * @return \Doctrine\ORM\Query
 	 */
-	public function create(Doctrine\ORM\EntityManagerInterface $em, SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IUser $user) : Doctrine\ORM\Query;
+	public function create(Doctrine\ORM\EntityManagerInterface $em, SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IUser $user): Doctrine\ORM\Query;
 }

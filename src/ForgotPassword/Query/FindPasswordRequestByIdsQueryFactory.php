@@ -17,7 +17,7 @@ class FindPasswordRequestByIdsQueryFactory implements IFindPasswordRequestByIdsQ
 	/**
 	 * {@inheritdoc}
 	 */
-	public function create(Doctrine\ORM\EntityManagerInterface $em, $userId, $passwordRequestId) : Doctrine\ORM\Query
+	public function create(Doctrine\ORM\EntityManagerInterface $em, $userId, $passwordRequestId): Doctrine\ORM\Query
 	{
 		return $em->createQueryBuilder()
 			->select('pr')

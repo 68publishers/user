@@ -13,5 +13,5 @@ interface IMailSender
 	 *
 	 * @return void
 	 */
-	public function send(string $mailName, array $to, array $args) : void;
+	public function send(string $mailName, array $to, array $args): void;
 }

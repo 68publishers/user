@@ -48,7 +48,7 @@ class PasswordRequestFactory implements IPasswordRequestFactory
 	 *
 	 * @return \SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest
 	 */
-	protected function createPasswordRequestEntity(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IUser $user) : SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest
+	protected function createPasswordRequestEntity(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IUser $user): SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest
 	{
 		return new SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\PasswordRequest($user);
 	}
@@ -58,7 +58,7 @@ class PasswordRequestFactory implements IPasswordRequestFactory
 	 *
 	 * @return \SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest
 	 */
-	private function getRequest(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IUser $user) : SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest
+	private function getRequest(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IUser $user): SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest
 	{
 		$transaction = $this->transactionFactory->create(function (Doctrine\ORM\EntityManagerInterface $em, SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IUser $user) {
 			$request = $this->createPasswordRequestEntity($user);
@@ -79,7 +79,7 @@ class PasswordRequestFactory implements IPasswordRequestFactory
 	/**
 	 * {@inheritdoc}
 	 */
-	public function create(string $email) : SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest
+	public function create(string $email): SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest
 	{
 		try {
 			/** @var NULL|\SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IUser $user */

@@ -14,5 +14,5 @@ interface IGetUserByEmailQueryFactory
 	 *
 	 * @return \Doctrine\ORM\Query
 	 */
-	public function create(Doctrine\ORM\EntityManagerInterface $em, string $email) : Doctrine\ORM\Query;
+	public function create(Doctrine\ORM\EntityManagerInterface $em, string $email): Doctrine\ORM\Query;
 }

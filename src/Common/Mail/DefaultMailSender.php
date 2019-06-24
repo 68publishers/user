@@ -47,7 +47,7 @@ final class DefaultMailSender implements IMailSender
 	/**
 	 * {@inheritdoc}
 	 */
-	public function send(string $mailName, array $to, array $args) : void
+	public function send(string $mailName, array $to, array $args): void
 	{
 		$file = $this->templatesDir . '/' . $mailName . '.latte';
 

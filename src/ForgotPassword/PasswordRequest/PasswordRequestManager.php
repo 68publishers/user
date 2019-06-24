@@ -61,12 +61,16 @@ class PasswordRequestManager implements IPasswordRequestManager
 	/**
 	 * {@inheritdoc}
 	 */
-	public function findRequest($uid, $rid) : SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest
+	public function findRequest($uid, $rid): SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest
 	{
-		/** @var \SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $request */
-		$request = $this->findPasswordRequestByIdsQueryFactory
-			->create($this->em, $uid, $rid)
-			->getOneOrNullResult();
+		try {
+			/** @var \SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $request */
+			$request = $this->findPasswordRequestByIdsQueryFactory
+				->create($this->em, $uid, $rid)
+				->getOneOrNullResult();
+		} catch (Doctrine\DBAL\DBALException $e) {
+			throw SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestProcessException::missingRequest($uid, $rid);
+		}
 
 		if (NULL === $request) {
 			throw SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestProcessException::missingRequest($uid, $rid);
@@ -82,7 +86,7 @@ class PasswordRequestManager implements IPasswordRequestManager
 	/**
 	 * {@inheritdoc}
 	 */
-	public function reset(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $passwordRequest, string $password) : void
+	public function reset(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $passwordRequest, string $password): void
 	{
 		$this->tryCatch($passwordRequest, function (SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $passwordRequest) use ($password) {
 			$user = $passwordRequest->getUser();
@@ -104,7 +108,7 @@ class PasswordRequestManager implements IPasswordRequestManager
 	/**
 	 * {@inheritdoc}
 	 */
-	public function cancel(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $passwordRequest) : void
+	public function cancel(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $passwordRequest): void
 	{
 		$this->tryCatch($passwordRequest, function (SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $passwordRequest) {
 			$passwordRequest->getResetDeviceInfo()->fill();

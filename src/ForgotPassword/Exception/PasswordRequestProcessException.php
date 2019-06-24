@@ -38,7 +38,7 @@ final class PasswordRequestProcessException extends SixtyEightPublishers\User\Co
 	 *
 	 * @return \SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestProcessException
 	 */
-	public static function missingRequest($uid, $rid) : self
+	public static function missingRequest($uid, $rid): self
 	{
 		return new static($uid, $rid, sprintf(
 			'Missing request for UID %s and RID %s',
@@ -53,7 +53,7 @@ final class PasswordRequestProcessException extends SixtyEightPublishers\User\Co
 	 *
 	 * @return \SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestProcessException
 	 */
-	public static function expiredRequest($uid, $rid) : self
+	public static function expiredRequest($uid, $rid): self
 	{
 		return new static($uid, $rid, sprintf(
 			'Request for UID %s and RID %s is already expired',
@@ -81,7 +81,7 @@ final class PasswordRequestProcessException extends SixtyEightPublishers\User\Co
 	/**
 	 * @return bool
 	 */
-	public function isMissingRequest() : bool
+	public function isMissingRequest(): bool
 	{
 		return $this->code === self::CODE_MISSING_REQUEST;
 	}
@@ -89,7 +89,7 @@ final class PasswordRequestProcessException extends SixtyEightPublishers\User\Co
 	/**
 	 * @return bool
 	 */
-	public function isExpiredRequest() : bool
+	public function isExpiredRequest(): bool
 	{
 		return $this->code === self::CODE_EXPIRED_REQUEST;
 	}

@@ -14,5 +14,5 @@ interface IPasswordRequestFactory
 	 * @return \SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\PasswordRequest
 	 * @throws \SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestCreationException
 	 */
-	public function create(string $email) : SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest;
+	public function create(string $email): SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest;
 }

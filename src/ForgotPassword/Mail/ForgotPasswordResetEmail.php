@@ -29,7 +29,7 @@ final class ForgotPasswordResetEmail implements IForgotPasswordResetEmail
 	/**
 	 * {@inheritdoc}
 	 */
-	public function send(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $request) : void
+	public function send(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $request): void
 	{
 		$this->mailSender->send(
 			self::NAME,

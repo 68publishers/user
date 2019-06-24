@@ -11,19 +11,19 @@ interface ILogger
 	 *
 	 * @return void
 	 */
-	public function error(string $message) : void;
+	public function error(string $message): void;
 
 	/**
 	 * @param string $message
 	 *
 	 * @return void
 	 */
-	public function notice(string $message) : void;
+	public function notice(string $message): void;
 
 	/**
 	 * @param string $message
 	 *
 	 * @return void
 	 */
-	public function info(string $message) : void;
+	public function info(string $message): void;
 }

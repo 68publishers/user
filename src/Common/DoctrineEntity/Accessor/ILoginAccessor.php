@@ -9,5 +9,5 @@ interface ILoginAccessor
 	/**
 	 * @return string
 	 */
-	public function getLogin() : string;
+	public function getLogin(): string;
 }

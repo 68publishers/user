@@ -10,7 +10,8 @@ use SixtyEightPublishers;
 
 final class UserExtension extends Nette\DI\CompilerExtension implements
 	Kdyby\Doctrine\DI\IEntityProvider,
-	Kdyby\Doctrine\DI\ITargetEntityProvider
+	Kdyby\Doctrine\DI\ITargetEntityProvider,
+	Kdyby\Translation\DI\ITranslationProvider
 {
 	/** @var array  */
 	private $defaults = [
@@ -41,7 +42,7 @@ final class UserExtension extends Nette\DI\CompilerExtension implements
 	/**
 	 * {@inheritdoc}
 	 */
-	public function loadConfiguration() : void
+	public function loadConfiguration(): void
 	{
 		foreach ($this->getExtensionAdapters() as $extensionAdapter) {
 			$extensionAdapter->loadConfiguration();
@@ -51,7 +52,7 @@ final class UserExtension extends Nette\DI\CompilerExtension implements
 	/**
 	 * {@inheritdoc}
 	 */
-	public function beforeCompile() : void
+	public function beforeCompile(): void
 	{
 		foreach ($this->getExtensionAdapters() as $extensionAdapter) {
 			$extensionAdapter->beforeCompile();
@@ -61,7 +62,7 @@ final class UserExtension extends Nette\DI\CompilerExtension implements
 	/**
 	 * {@inheritdoc}
 	 */
-	public function afterCompile(Nette\PhpGenerator\ClassType $class) : void
+	public function afterCompile(Nette\PhpGenerator\ClassType $class): void
 	{
 		foreach ($this->getExtensionAdapters() as $extensionAdapter) {
 			$extensionAdapter->afterCompile($class);
@@ -71,9 +72,9 @@ final class UserExtension extends Nette\DI\CompilerExtension implements
 	/**
 	 * @param array $config
 	 */
-	private function buildExtensionAdapters(array $config) : void
+	private function buildExtensionAdapters(array $config): void
 	{
-		$extensionAdapterFactory = new ExtensionAdapterFactory($this->getContainerBuilder());
+		$extensionAdapterFactory = new ExtensionAdapterFactory($this->getContainerBuilder(), new \ArrayObject());
 
 		foreach ($this->extensionAdapters as $name => $className) {
 			$this->extensionAdapters[$name] = $extensionAdapterFactory->create(
@@ -87,7 +88,7 @@ final class UserExtension extends Nette\DI\CompilerExtension implements
 	/**
 	 * @return \SixtyEightPublishers\User\DI\IExtensionAdapter[]
 	 */
-	private function getExtensionAdapters() : array
+	private function getExtensionAdapters(): array
 	{
 		if (FALSE === $this->extensionAdaptersBuilded) {
 			/** @noinspection PhpInternalEntityUsedInspection */
@@ -105,16 +106,16 @@ final class UserExtension extends Nette\DI\CompilerExtension implements
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getEntityMappings() : array
+	public function getEntityMappings(): array
 	{
-		return array_merge(array_values(array_map(
+		$map =  array_values(array_map(
 			function (Kdyby\Doctrine\DI\IEntityProvider $provider) {
 				return $provider->getEntityMappings();
 			},
-			array_filter($this->getExtensionAdapters(), function ($adapter) {
-				return $adapter instanceof Kdyby\Doctrine\DI\IEntityProvider;
-			})
-		)));
+			$this->getExtensionAdapters()
+		));
+
+		return 0 < count($map) ? array_merge(...$map) : [];
 	}
 
 	/**************** interface \Kdyby\Doctrine\DI\ITargetEntityProvider ****************/
@@ -122,15 +123,32 @@ final class UserExtension extends Nette\DI\CompilerExtension implements
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getTargetEntityMappings() : array
+	public function getTargetEntityMappings(): array
 	{
-		return array_merge(array_values(array_map(
+		$map =  array_values(array_map(
 			function (Kdyby\Doctrine\DI\ITargetEntityProvider $provider) {
 				return $provider->getTargetEntityMappings();
 			},
-			array_filter($this->getExtensionAdapters(), function ($adapter) {
-				return $adapter instanceof Kdyby\Doctrine\DI\ITargetEntityProvider;
-			})
-		)));
+			$this->getExtensionAdapters()
+		));
+
+		return 0 < count($map) ? array_merge(...$map) : [];
+	}
+
+	/**************** interface \Kdyby\Translation\DI\ITranslationProvider ****************/
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getTranslationResources(): array
+	{
+		$map =  array_values(array_map(
+			function (Kdyby\Translation\DI\ITranslationProvider $provider) {
+				return $provider->getTranslationResources();
+			},
+			$this->getExtensionAdapters()
+		));
+
+		return 0 < count($map) ? array_merge(...$map) : [];
 	}
 }
