@@ -15,7 +15,7 @@ final class NullMailSender implements IMailSender
 	/**
 	 * {@inheritdoc}
 	 */
-	public function send(string $mailName, array $to, array $args) : void
+	public function send(string $mailName, array $to, array $args): void
 	{
 	}
 }

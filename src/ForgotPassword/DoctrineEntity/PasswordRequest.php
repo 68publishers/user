@@ -91,7 +91,7 @@ final class PasswordRequest implements IPasswordRequest
 	 *
 	 * @return void
 	 */
-	public function onPreUpdate() : void
+	public function onPreUpdate(): void
 	{
 		$this->updated = new \DateTime('now');
 	}
@@ -101,7 +101,7 @@ final class PasswordRequest implements IPasswordRequest
 	 *
 	 * @return void
 	 */
-	public static function setExpirationString(string $expiration) : void
+	public static function setExpirationString(string $expiration): void
 	{
 		self::$expiration = $expiration;
 	}
@@ -111,7 +111,7 @@ final class PasswordRequest implements IPasswordRequest
 	/**
 	 * @return \Ramsey\Uuid\UuidInterface
 	 */
-	public function getId() : Ramsey\Uuid\UuidInterface
+	public function getId(): Ramsey\Uuid\UuidInterface
 	{
 		return $this->id;
 	}
@@ -119,7 +119,7 @@ final class PasswordRequest implements IPasswordRequest
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getStatus() : string
+	public function getStatus(): string
 	{
 		return $this->status;
 	}
@@ -127,7 +127,7 @@ final class PasswordRequest implements IPasswordRequest
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setStatus(string $status) : void
+	public function setStatus(string $status): void
 	{
 		if (!in_array($status, self::STATUSES)) {
 			throw new SixtyEightPublishers\User\Common\Exception\InvalidArgumentException(sprintf(
@@ -143,7 +143,7 @@ final class PasswordRequest implements IPasswordRequest
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getCreated() : \DateTime
+	public function getCreated(): \DateTime
 	{
 		return $this->created;
 	}
@@ -151,7 +151,7 @@ final class PasswordRequest implements IPasswordRequest
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getUpdated() : \DateTime
+	public function getUpdated(): \DateTime
 	{
 		return $this->updated;
 	}
@@ -159,7 +159,7 @@ final class PasswordRequest implements IPasswordRequest
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getUser() : IUser
+	public function getUser(): IUser
 	{
 		return $this->user;
 	}
@@ -167,7 +167,7 @@ final class PasswordRequest implements IPasswordRequest
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getExpiration() : \DateTime
+	public function getExpiration(): \DateTime
 	{
 		return (clone $this->created)->modify(self::$expiration);
 	}
@@ -175,7 +175,7 @@ final class PasswordRequest implements IPasswordRequest
 	/**
 	 * {@inheritdoc}
 	 */
-	public function isExpired() : bool
+	public function isExpired(): bool
 	{
 		return $this->getExpiration() < new \DateTime('now', new \DateTimeZone('UTC'));
 	}
@@ -183,7 +183,7 @@ final class PasswordRequest implements IPasswordRequest
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getRequestDeviceInfo() : DeviceInfo
+	public function getRequestDeviceInfo(): DeviceInfo
 	{
 		return $this->requestDeviceInfo;
 	}
@@ -191,7 +191,7 @@ final class PasswordRequest implements IPasswordRequest
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getResetDeviceInfo() : DeviceInfo
+	public function getResetDeviceInfo(): DeviceInfo
 	{
 		return $this->resetDeviceInfo;
 	}

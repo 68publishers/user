@@ -17,7 +17,7 @@ class CancelPasswordRequestsByUserQueryFactory implements ICancelPasswordRequest
 	/**
 	 * {@inheritdoc}
 	 */
-	public function create(Doctrine\ORM\EntityManagerInterface $em, SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IUser $user) : Doctrine\ORM\Query
+	public function create(Doctrine\ORM\EntityManagerInterface $em, SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IUser $user): Doctrine\ORM\Query
 	{
 		return $em->createQueryBuilder()
 			->update(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest::class, 'pr')

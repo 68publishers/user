@@ -29,7 +29,7 @@ final class PasswordHasBeenResetEmail implements IPasswordHasBeenResetEmail
 	/**
 	 * {@inheritdoc}
 	 */
-	public function send(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IUser $user) : void
+	public function send(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IUser $user): void
 	{
 		$this->mailSender->send(
 			self::NAME,

@@ -33,7 +33,7 @@ final class Address
 	/**
 	 * @return string
 	 */
-	public function getEmail() : string
+	public function getEmail(): string
 	{
 		return $this->email;
 	}
@@ -41,7 +41,7 @@ final class Address
 	/**
 	 * @return NULL|string
 	 */
-	public function getName() : ?string
+	public function getName(): ?string
 	{
 		return $this->name;
 	}

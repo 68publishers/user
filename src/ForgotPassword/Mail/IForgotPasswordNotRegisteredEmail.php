@@ -11,5 +11,5 @@ interface IForgotPasswordNotRegisteredEmail
 	 *
 	 * @return void
 	 */
-	public function send(string $email) : void;
+	public function send(string $email): void;
 }

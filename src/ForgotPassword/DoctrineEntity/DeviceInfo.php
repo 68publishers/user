@@ -39,7 +39,7 @@ final class DeviceInfo
 	/**
 	 * @return void
 	 */
-	public function fill() : void
+	public function fill(): void
 	{
 		$this->ip = $_SERVER['HTTP_CLIENT_IP'] ?? ($_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR']);
 
@@ -68,7 +68,7 @@ final class DeviceInfo
 	/**
 	 * @return string
 	 */
-	public function getIp() : string
+	public function getIp(): string
 	{
 		return $this->ip;
 	}
@@ -76,7 +76,7 @@ final class DeviceInfo
 	/**
 	 * @return string
 	 */
-	public function getOs() : string
+	public function getOs(): string
 	{
 		return $this->os;
 	}
@@ -84,7 +84,7 @@ final class DeviceInfo
 	/**
 	 * @return string
 	 */
-	public function getUserAgent() : string
+	public function getUserAgent(): string
 	{
 		return $this->userAgent;
 	}

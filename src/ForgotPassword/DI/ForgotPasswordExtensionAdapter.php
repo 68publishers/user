@@ -10,7 +10,8 @@ use SixtyEightPublishers;
 
 final class ForgotPasswordExtensionAdapter extends SixtyEightPublishers\User\DI\AbstractExtensionAdapter implements
 	Kdyby\Doctrine\DI\IEntityProvider,
-	Kdyby\Doctrine\DI\ITargetEntityProvider
+	Kdyby\Doctrine\DI\ITargetEntityProvider,
+	Kdyby\Translation\DI\ITranslationProvider
 {
 	/** @var array  */
 	protected static $defaults = [
@@ -22,7 +23,7 @@ final class ForgotPasswordExtensionAdapter extends SixtyEightPublishers\User\DI\
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function processConfig(array $config) : array
+	protected function processConfig(array $config, \ArrayObject $sharedData): array
 	{
 		Nette\Utils\Validators::assertField($config, 'enabled', 'bool');
 		Nette\Utils\Validators::assertField($config, 'register_controls', 'bool');
@@ -32,13 +33,25 @@ final class ForgotPasswordExtensionAdapter extends SixtyEightPublishers\User\DI\
 			$this->stopPropagation();
 		}
 
+		if (!is_subclass_of(
+			$sharedData[SixtyEightPublishers\User\Common\DI\CommonExtensionAdapter::SHARED_DATA_USER_CLASS_NAME],
+			SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IUser::class,
+			TRUE
+		)
+		) {
+			throw new SixtyEightPublishers\User\Common\Exception\ConfigurationException(sprintf(
+				'Your User entity must implement interface %s',
+				SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IUser::class
+			));
+		}
+
 		return $config;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function loadConfiguration() : void
+	public function loadConfiguration(): void
 	{
 		$config = $this->getConfig();
 		$builder = $this->getContainerBuilder();
@@ -97,7 +110,7 @@ final class ForgotPasswordExtensionAdapter extends SixtyEightPublishers\User\DI\
 	/**
 	 * {@inheritdoc}
 	 */
-	public function afterCompile(Nette\PhpGenerator\ClassType $class) : void
+	public function afterCompile(Nette\PhpGenerator\ClassType $class): void
 	{
 		$config = $this->getConfig();
 		$initialize = $class->getMethod('initialize');
@@ -113,7 +126,7 @@ final class ForgotPasswordExtensionAdapter extends SixtyEightPublishers\User\DI\
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getEntityMappings() : array
+	public function getEntityMappings(): array
 	{
 		return [
 			'SixtyEightPublishers\User\ForgotPassword\DoctrineEntity' => __DIR__ . '/../DoctrineEntity',
@@ -125,10 +138,25 @@ final class ForgotPasswordExtensionAdapter extends SixtyEightPublishers\User\DI\
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getTargetEntityMappings() : array
+	public function getTargetEntityMappings(): array
 	{
 		return [
 			SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest::class => SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\PasswordRequest::class,
+			SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IUser::class => $this->getSharedData(SixtyEightPublishers\User\Common\DI\CommonExtensionAdapter::SHARED_DATA_USER_CLASS_NAME),
 		];
+	}
+
+	/**************** interface \Kdyby\Translation\DI\ITranslationProvider ****************/
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getTranslationResources(): array
+	{
+		$config = $this->getConfig();
+
+		return TRUE === $config['register_controls']
+			? [ __DIR__ . '/../locale' ]
+			: [];
 	}
 }

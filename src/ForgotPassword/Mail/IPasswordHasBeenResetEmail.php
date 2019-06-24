@@ -13,5 +13,5 @@ interface IPasswordHasBeenResetEmail
 	 *
 	 * @return void
 	 */
-	public function send(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IUser $user) : void;
+	public function send(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IUser $user): void;
 }

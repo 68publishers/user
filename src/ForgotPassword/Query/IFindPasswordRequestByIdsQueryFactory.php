@@ -16,5 +16,5 @@ interface IFindPasswordRequestByIdsQueryFactory
 	 *
 	 * @return \Doctrine\ORM\Query
 	 */
-	public function create(Doctrine\ORM\EntityManagerInterface $em, $userId, $passwordRequestId) : Doctrine\ORM\Query;
+	public function create(Doctrine\ORM\EntityManagerInterface $em, $userId, $passwordRequestId): Doctrine\ORM\Query;
 }

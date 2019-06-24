@@ -14,5 +14,5 @@ interface IPasswordRequestSender
 	 * @return \SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest|NULL
 	 * @throws \SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestCreationException
 	 */
-	public function send(string $email) : ?SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest;
+	public function send(string $email): ?SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest;
 }

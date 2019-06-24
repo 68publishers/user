@@ -15,7 +15,7 @@ final class PasswordRequestCreationException extends SixtyEightPublishers\User\C
 	 *
 	 * @return \SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestCreationException
 	 */
-	public static function notRegisteredEmail(string $email) : self
+	public static function notRegisteredEmail(string $email): self
 	{
 		return new static(sprintf(
 			'Email "%s" is not registered',
@@ -28,7 +28,7 @@ final class PasswordRequestCreationException extends SixtyEightPublishers\User\C
 	 *
 	 * @return \SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestCreationException
 	 */
-	public static function from(\Throwable $e) : self
+	public static function from(\Throwable $e): self
 	{
 		return !$e instanceof self ? new static($e->getMessage(), $e->getCode(), $e) : $e;
 	}
@@ -36,7 +36,7 @@ final class PasswordRequestCreationException extends SixtyEightPublishers\User\C
 	/**
 	 * @return bool
 	 */
-	public function isNotRegisteredEmail() : bool
+	public function isNotRegisteredEmail(): bool
 	{
 		return $this->getCode() === self::CODE_NOT_REGISTERED_EMAIL;
 	}

@@ -12,8 +12,10 @@ use SixtyEightPublishers;
  * @method void onError(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $request, SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestProcessException $e)
  * @method void onFormCreation(Nette\Application\UI\Form $form)
  */
-class ResetPasswordControl extends SixtyEightPublishers\SmartNetteComponent\UI\Control
+class ResetPasswordControl extends SixtyEightPublishers\SmartNetteComponent\UI\Control implements SixtyEightPublishers\User\Common\Translator\ITranslatableService
 {
+	use SixtyEightPublishers\User\Common\Translator\TTranslatableService;
+
 	/** @var \SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest  */
 	private $passwordRequest;
 
@@ -58,20 +60,26 @@ class ResetPasswordControl extends SixtyEightPublishers\SmartNetteComponent\UI\C
 	/**
 	 * @return \Nette\Application\UI\Form
 	 */
-	protected function createComponentForm() : Nette\Application\UI\Form
+	protected function createComponentForm(): Nette\Application\UI\Form
 	{
 		$form = new Nette\Application\UI\Form();
 
-		$form->addPassword('password', 'Password')
-			->setRequired('Please fill your new password.')
+		$form->setTranslator(SixtyEightPublishers\User\Common\Translator\PrefixedTranslator::createFromClassName(
+			$this->getTranslator(),
+			static::class
+		));
+
+		$form->addPassword('password', 'password.field')
+			->setRequired('password.required')
 			->setAttribute('autocomplete', 'new-password');
 
-		$form->addSubmit('send', 'Send');
-		$form->addProtection();
+		$form->addProtection('protection.rule');
 
 		$form->onSuccess[] = [$this, 'processForm'];
 
 		$this->onFormCreation($form);
+
+		$form->addSubmit('send', 'send.field');
 
 		return $form;
 	}
@@ -79,7 +87,7 @@ class ResetPasswordControl extends SixtyEightPublishers\SmartNetteComponent\UI\C
 	/**
 	 * @return void
 	 */
-	public function render() : void
+	public function render(): void
 	{
 		$this->doRender();
 	}
@@ -91,7 +99,7 @@ class ResetPasswordControl extends SixtyEightPublishers\SmartNetteComponent\UI\C
 	 *
 	 * @return void
 	 */
-	public function processForm(Nette\Application\UI\Form $form) : void
+	public function processForm(Nette\Application\UI\Form $form): void
 	{
 		try {
 			$password = $form->values->password;

@@ -9,5 +9,5 @@ interface IPasswordAccessor
 	/**
 	 * @return string
 	 */
-	public function getPassword() : string;
+	public function getPassword(): string;
 }

@@ -6,12 +6,15 @@ namespace SixtyEightPublishers\User\Common;
 
 use SixtyEightPublishers;
 
-final class UserMappingFields implements \ArrayAccess
+final class UserMapping implements \ArrayAccess
 {
 	const 	FIELD_ID = 'id',
 			FILED_EMAIL = 'email',
 			FIELD_PASSWORD = 'password',
 			FIELD_LOGIN = 'login';
+
+	/** @var string  */
+	private $className;
 
 	/** @var array  */
 	private $fields = [
@@ -22,11 +25,21 @@ final class UserMappingFields implements \ArrayAccess
 	];
 
 	/**
-	 * @param array $fields
+	 * @param string $className
+	 * @param array  $fields
 	 */
-	public function __construct(array $fields)
+	public function __construct(string $className, array $fields)
 	{
+		$this->className = $className;
 		$this->fields = array_merge($this->fields, $fields);
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getClassName(): string
+	{
+		return $this->className;
 	}
 
 	/**

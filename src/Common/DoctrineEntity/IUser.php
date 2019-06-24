@@ -11,5 +11,5 @@ interface IUser extends Nette\Security\IIdentity
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getRoles() : array;
+	public function getRoles(): array;
 }

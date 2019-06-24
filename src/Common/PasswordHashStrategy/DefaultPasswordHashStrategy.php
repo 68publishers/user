@@ -26,7 +26,7 @@ final class DefaultPasswordHashStrategy implements IPasswordHashStrategy
 	/**
 	 * {@inheritdoc}
 	 */
-	public function hash(string $password) : string
+	public function hash(string $password): string
 	{
 		return Nette\Security\Passwords::hash($password, $this->options);
 	}
@@ -34,7 +34,7 @@ final class DefaultPasswordHashStrategy implements IPasswordHashStrategy
 	/**
 	 * {@inheritdoc}
 	 */
-	public function needRehash(string $password) : bool
+	public function needRehash(string $password): bool
 	{
 		return Nette\Security\Passwords::needsRehash($password, $this->options);
 	}
@@ -42,7 +42,7 @@ final class DefaultPasswordHashStrategy implements IPasswordHashStrategy
 	/**
 	 * {@inheritdoc}
 	 */
-	public function verify(string $password, string $hash) : bool
+	public function verify(string $password, string $hash): bool
 	{
 		return Nette\Security\Passwords::verify($password, $hash);
 	}

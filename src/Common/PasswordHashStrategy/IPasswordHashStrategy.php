@@ -11,14 +11,14 @@ interface IPasswordHashStrategy
 	 *
 	 * @return string
 	 */
-	public function hash(string $password) : string;
+	public function hash(string $password): string;
 
 	/**
 	 * @param string $password
 	 *
 	 * @return bool
 	 */
-	public function needRehash(string $password) : bool;
+	public function needRehash(string $password): bool;
 
 	/**
 	 * @param string $password
@@ -26,5 +26,5 @@ interface IPasswordHashStrategy
 	 *
 	 * @return bool
 	 */
-	public function verify(string $password, string $hash) : bool;
+	public function verify(string $password, string $hash): bool;
 }

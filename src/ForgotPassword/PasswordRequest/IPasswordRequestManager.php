@@ -15,7 +15,7 @@ interface IPasswordRequestManager
 	 * @return \SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest
 	 * @throws \SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestProcessException
 	 */
-	public function findRequest($uid, $rid) : SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest;
+	public function findRequest($uid, $rid): SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest;
 
 	/**
 	 * @param \SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $passwordRequest
@@ -24,7 +24,7 @@ interface IPasswordRequestManager
 	 * @return void
 	 * @throws \SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestProcessException
 	 */
-	public function reset(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $passwordRequest, string $password) : void;
+	public function reset(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $passwordRequest, string $password): void;
 
 	/**
 	 * @param \SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $passwordRequest
@@ -32,5 +32,5 @@ interface IPasswordRequestManager
 	 * @return void
 	 * @throws \SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestProcessException
 	 */
-	public function cancel(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $passwordRequest) : void;
+	public function cancel(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $passwordRequest): void;
 }
