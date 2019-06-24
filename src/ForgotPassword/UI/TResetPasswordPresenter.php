@@ -54,6 +54,7 @@ trait TResetPasswordPresenter
 	 * @param string $rid PasswordRequest UUID
 	 *
 	 * @return void
+	 * @throws \Nette\Application\BadRequestException
 	 */
 	public function actionDefault(string $uid, string $rid): void
 	{
