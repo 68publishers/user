@@ -12,9 +12,9 @@ use SixtyEightPublishers;
  * @method void onError(SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestCreationException $e, string $email)
  * @method void onFormCreation(Nette\Application\UI\Form $form)
  */
-class ForgotPasswordControl extends SixtyEightPublishers\SmartNetteComponent\UI\Control implements SixtyEightPublishers\User\Common\Translator\ITranslatableService
+class ForgotPasswordControl extends SixtyEightPublishers\SmartNetteComponent\UI\Control implements SixtyEightPublishers\User\Common\Translator\ITranslatorAware
 {
-	use SixtyEightPublishers\User\Common\Translator\TTranslatableService;
+	use SixtyEightPublishers\User\Common\Translator\TTranslatorAware;
 
 	/** @var \SixtyEightPublishers\User\ForgotPassword\PasswordRequest\IPasswordRequestSender  */
 	private $passwordRequestSender;

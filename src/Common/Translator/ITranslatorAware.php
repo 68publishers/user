@@ -6,7 +6,7 @@ namespace SixtyEightPublishers\User\Common\Translator;
 
 use Nette;
 
-interface ITranslatableService
+interface ITranslatorAware
 {
 	/**
 	 * @param \Nette\Localization\ITranslator $translator

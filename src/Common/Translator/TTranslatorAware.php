@@ -6,7 +6,7 @@ namespace SixtyEightPublishers\User\Common\Translator;
 
 use Nette;
 
-trait TTranslatableService
+trait TTranslatorAware
 {
 	/** @var NULL|\Nette\Localization\ITranslator */
 	private $translator;
