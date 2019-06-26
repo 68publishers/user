@@ -12,6 +12,7 @@ final class DoctrineIdentityExtensionAdapter extends SixtyEightPublishers\User\D
 	/** @var array  */
 	protected static $defaults = [
 		'enabled' => FALSE,
+		'namespace' => NULL,
 	];
 
 	/**
@@ -20,7 +21,8 @@ final class DoctrineIdentityExtensionAdapter extends SixtyEightPublishers\User\D
 	protected function processConfig(array $config, \ArrayObject $sharedData): array
 	{
 		Nette\Utils\Validators::assertField($config, 'enabled', 'bool');
-
+		Nette\Utils\Validators::assertField($config, 'namespace', 'NULL|string|' . Nette\DI\Statement::class);
+		
 		if (FALSE === $config['enabled']) {
 			$this->stopPropagation();
 		}
@@ -44,27 +46,34 @@ final class DoctrineIdentityExtensionAdapter extends SixtyEightPublishers\User\D
 	 */
 	public function beforeCompile(): void
 	{
+		$config = $this->getConfig();
 		$builder = $this->getContainerBuilder();
+		$userStorageProxy = $builder->getDefinition($this->prefix('user_storage'));
 
 		foreach ($builder->findByType(Nette\Security\IUserStorage::class) as $name => $userStorage) {
-			if ($name !== $this->prefix('user_storage')) {
+			if ($name !== $this->prefix('user_storage') && TRUE === $userStorage->isAutowired()) {
 				break;
 			}
 		}
 
 		if (!isset($userStorage)) {
 			throw new SixtyEightPublishers\User\Common\Exception\RuntimeException(sprintf(
-				'Service of type %s not found.',
+				'Autowired service of type %s not found.',
 				Nette\Security\IUserStorage::class
 			));
 		}
 
 		$userStorage->setAutowired(FALSE);
 
-		$builder->getDefinition($this->prefix('user_storage'))
-			->setArguments([
+		$userStorageProxy->setAutowired(TRUE);
+		$userStorageProxy->setArguments([
 				'userStorage' => $userStorage,
-			])
-			->setAutowired(TRUE);
+		]);
+		
+		if (NULL !== $config['namespace']) {
+			$userStorageProxy->addSetup('$service->setNamespace(?)', [
+				'namespace' => $config['namespace'],
+			]);
+		}
 	}
 }
