@@ -21,7 +21,7 @@ final class DoctrineIdentityExtensionAdapter extends SixtyEightPublishers\User\D
 	protected function processConfig(array $config, \ArrayObject $sharedData): array
 	{
 		Nette\Utils\Validators::assertField($config, 'enabled', 'bool');
-		Nette\Utils\Validators::assertField($config, 'namespace', 'NULL|string|' . Nette\DI\Statement::class);
+		Nette\Utils\Validators::assertField($config, 'namespace', 'null|string|' . Nette\DI\Statement::class);
 		
 		if (FALSE === $config['enabled']) {
 			$this->stopPropagation();
