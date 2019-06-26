@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace SixtyEightPublishers\User\Common\DoctrineEntity\Accessor;
 
-interface ILoginAccessor
+interface IUsernameAccessor
 {
 	/**
 	 * @return string
 	 */
-	public function getLogin(): string;
+	public function getUsername(): string;
 }
