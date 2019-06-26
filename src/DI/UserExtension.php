@@ -18,6 +18,7 @@ final class UserExtension extends Nette\DI\CompilerExtension implements
 		# 'common' is loaded in constructor
 		# 'doctrine_identity' is loaded in constructor
 		# 'forgot_password' is loaded in constructor
+		# 'authentication' is loaded in constructor
 	];
 
 	/** @var string[]|\SixtyEightPublishers\User\DI\IExtensionAdapter[]  */
@@ -25,6 +26,7 @@ final class UserExtension extends Nette\DI\CompilerExtension implements
 		'common' => SixtyEightPublishers\User\Common\DI\CommonExtensionAdapter::class,
 		'doctrine_identity' => SixtyEightPublishers\User\DoctrineIdentity\DI\DoctrineIdentityExtensionAdapter::class,
 		'forgot_password' => SixtyEightPublishers\User\ForgotPassword\DI\ForgotPasswordExtensionAdapter::class,
+		'authentication' => SixtyEightPublishers\User\Authentication\DI\AuthenticationExtensionAdapter::class,
 	];
 
 	/** @var bool  */
@@ -36,6 +38,7 @@ final class UserExtension extends Nette\DI\CompilerExtension implements
 			'common' => SixtyEightPublishers\User\Common\DI\CommonExtensionAdapter::getDefaults(),
 			'doctrine_identity' => SixtyEightPublishers\User\DoctrineIdentity\DI\DoctrineIdentityExtensionAdapter::getDefaults(),
 			'forgot_password' => SixtyEightPublishers\User\ForgotPassword\DI\ForgotPasswordExtensionAdapter::getDefaults(),
+			'authentication' => SixtyEightPublishers\User\Authentication\DI\AuthenticationExtensionAdapter::getDefaults(),
 		]);
 	}
 

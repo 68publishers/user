@@ -1,0 +1,13 @@
+username:
+	field: Přihlašovací jméno
+	required: Vyplňte prosím přihlašovací jméno.
+
+password:
+	field: Heslo
+	required: Vyplňte prosím heslo.
+
+protection:
+    rule: Vaše session vypršela. Obnovte prosím stránku a zkuste to znova.
+
+login:
+	field: Přihlásit
