@@ -1,0 +1,13 @@
+username:
+	field: Username
+	required: Please enter username.
+
+password:
+	field: Password
+	required: Please enter password.
+
+protection:
+	rule: Your session has expired. Please return to the home page and try again.
+
+login:
+	field: Login
