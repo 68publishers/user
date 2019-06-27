@@ -19,6 +19,5 @@ tools:
     php_analyzer: true
     php_code_coverage: true
 
-
 before_commands:
     - "composer install --prefer-source"
