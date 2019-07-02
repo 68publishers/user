@@ -21,6 +21,7 @@
 		"nette/forms": "~2.4",
 		"nette/neon": "~2.4",
 		"nette/application": "~2.4",
+		"nette/http": "~2.4",
 		"tracy/tracy": "~2.4",
 		"68publishers/doctrine-persistence": "^0.1",
 		"68publishers/smart-nette-component": "^0.1",
