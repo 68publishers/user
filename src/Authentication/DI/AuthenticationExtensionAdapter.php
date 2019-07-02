@@ -16,6 +16,7 @@ final class AuthenticationExtensionAdapter extends SixtyEightPublishers\User\DI\
 	protected static $defaults = [
 		'enabled' => FALSE,
 		'authenticator' => SixtyEightPublishers\User\Authentication\Authenticator\Authenticator::class,
+		'csrf_token_factory' => SixtyEightPublishers\User\Authentication\Csrf\CsrfTokenFactory::class,
 		'register_controls' => FALSE,
 	];
 
@@ -29,6 +30,7 @@ final class AuthenticationExtensionAdapter extends SixtyEightPublishers\User\DI\
 	{
 		Nette\Utils\Validators::assertField($config, 'enabled', 'bool');
 		Nette\Utils\Validators::assertField($config, 'authenticator', 'string|' . Nette\DI\Statement::class);
+		Nette\Utils\Validators::assertField($config, 'csrf_token_factory', 'string|' . Nette\DI\Statement::class);
 		Nette\Utils\Validators::assertField($config, 'register_controls', 'bool');
 
 		if (FALSE === $config['enabled']) {
@@ -58,6 +60,7 @@ final class AuthenticationExtensionAdapter extends SixtyEightPublishers\User\DI\
 		$config = $this->getConfig();
 		$builder = $this->getContainerBuilder();
 		$authenticator = $config['authenticator'];
+		$csrfTokenFactory = $config['csrf_token_factory'];
 
 		# authenticator
 		if (!is_string($authenticator) || !Nette\Utils\Strings::startsWith($authenticator, '@')) {
@@ -75,6 +78,13 @@ final class AuthenticationExtensionAdapter extends SixtyEightPublishers\User\DI\
 		}
 
 		$builder->addAlias('nette.authenticator', $this->authenticatorName);
+
+		# CSRF
+		if (!is_string($csrfTokenFactory) || !Nette\Utils\Strings::startsWith($csrfTokenFactory, '@')) {
+			$builder->addDefinition($this->prefix('csrf_token_factory'))
+				->setType(SixtyEightPublishers\User\Authentication\Csrf\ICsrfTokenFactory::class)
+				->setFactory($csrfTokenFactory);
+		}
 
 		# controls
 		if (TRUE === $config['register_controls']) {
