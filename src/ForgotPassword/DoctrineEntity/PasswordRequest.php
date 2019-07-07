@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks
  */
-final class PasswordRequest implements IPasswordRequest
+class PasswordRequest implements IPasswordRequest
 {
 	use Nette\SmartObject;
 
