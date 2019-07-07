@@ -40,6 +40,8 @@ final class SignInControl extends SixtyEightPublishers\SmartNetteComponent\UI\Co
 	 */
 	public function __construct(Nette\Security\User $user, SixtyEightPublishers\User\Common\Logger\ILogger $logger)
 	{
+		parent::__construct();
+
 		$this->user = $user;
 		$this->logger = $logger;
 	}
@@ -116,7 +118,7 @@ final class SignInControl extends SixtyEightPublishers\SmartNetteComponent\UI\Co
 			$this->onLoggedIn();
 		} catch (Nette\Security\AuthenticationException $e) {
 			if (Nette\Security\IAuthenticator::FAILURE === $e->getCode()) {
-				$this->logger->log((string) $e);
+				$this->logger->error((string) $e);
 			}
 
 			$this->onAuthenticationFail($e);
