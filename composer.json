@@ -27,7 +27,8 @@
 		"68publishers/smart-nette-component": "^0.1",
 		"kdyby/doctrine": "^3.0",
 		"kdyby/translation": "~2.4",
-		"ramsey/uuid": "^3.8"
+		"ramsey/uuid": "^3.8",
+		"piwik/device-detector": "^3.10"
 	},
 	"require-dev": {
 		"friendsofphp/php-cs-fixer": "^2.0",
