@@ -17,7 +17,7 @@ final class AuthenticatorMount implements Nette\Security\IAuthenticator
 	private $authenticators;
 
 	/**
-	 * @param \Nette\Security\IAuthenticator $authenticators
+	 * @param \Nette\Security\IAuthenticator[] $authenticators
 	 */
 	public function __construct(array $authenticators)
 	{
@@ -51,6 +51,8 @@ final class AuthenticatorMount implements Nette\Security\IAuthenticator
 				$name
 			));
 		}
+
+		return $this->authenticators[$name];
 	}
 
 	/**
@@ -81,7 +83,7 @@ final class AuthenticatorMount implements Nette\Security\IAuthenticator
 			), self::FAILURE);
 		}
 
-		[ $prefix, $login ] = $credentials[self::USERNAME];
+		[ $prefix, $login ] = $this->getPrefixAndLogin($credentials[self::USERNAME]);
 
 		try {
 			$authenticator = $this->getAuthenticator($prefix);
