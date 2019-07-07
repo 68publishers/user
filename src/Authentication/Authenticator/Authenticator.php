@@ -101,7 +101,7 @@ final class Authenticator implements Nette\Security\IAuthenticator
 	/**
 	 * {@inheritdoc}
 	 */
-	public function authenticate(array $credentials): Nette\Security\Identity
+	public function authenticate(array $credentials): Nette\Security\IIdentity
 	{
 		[ $login, $password ] = $this->validateCredentials($credentials);
 		$user = $this->findUser($login);
