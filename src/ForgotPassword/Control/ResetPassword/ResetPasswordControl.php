@@ -14,7 +14,7 @@ use SixtyEightPublishers;
  */
 class ResetPasswordControl extends SixtyEightPublishers\SmartNetteComponent\UI\Control implements SixtyEightPublishers\User\Common\Translator\ITranslatorAware
 {
-	use SixtyEightPublishers\User\Common\Translator\TTranslatorAware;
+	use SixtyEightPublishers\User\Common\Translator\TPrefixedTranslatorAware;
 
 	/** @var \SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest  */
 	private $passwordRequest;
@@ -64,10 +64,7 @@ class ResetPasswordControl extends SixtyEightPublishers\SmartNetteComponent\UI\C
 	{
 		$form = new Nette\Application\UI\Form();
 
-		$form->setTranslator(SixtyEightPublishers\User\Common\Translator\PrefixedTranslator::createFromClassName(
-			$this->getTranslator(),
-			static::class
-		));
+		$form->setTranslator($this->getPrefixedTranslator());
 
 		$form->addPassword('password', 'password.field')
 			->setRequired('password.required')
@@ -89,6 +86,7 @@ class ResetPasswordControl extends SixtyEightPublishers\SmartNetteComponent\UI\C
 	 */
 	public function render(): void
 	{
+		$this->template->setTranslator($this->getPrefixedTranslator());
 		$this->doRender();
 	}
 

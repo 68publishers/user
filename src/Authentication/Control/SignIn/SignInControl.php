@@ -14,7 +14,7 @@ use SixtyEightPublishers;
  */
 final class SignInControl extends SixtyEightPublishers\SmartNetteComponent\UI\Control implements SixtyEightPublishers\User\Common\Translator\ITranslatorAware
 {
-	use SixtyEightPublishers\User\Common\Translator\TTranslatorAware;
+	use SixtyEightPublishers\User\Common\Translator\TPrefixedTranslatorAware;
 
 	/** @var \Nette\Security\User  */
 	private $user;
@@ -63,6 +63,7 @@ final class SignInControl extends SixtyEightPublishers\SmartNetteComponent\UI\Co
 	 */
 	public function render(): void
 	{
+		$this->template->setTranslator($this->getPrefixedTranslator());
 		$this->doRender();
 	}
 
@@ -73,10 +74,7 @@ final class SignInControl extends SixtyEightPublishers\SmartNetteComponent\UI\Co
 	{
 		$form = new Nette\Application\UI\Form();
 
-		$form->setTranslator(SixtyEightPublishers\User\Common\Translator\PrefixedTranslator::createFromClassName(
-			$this->getTranslator(),
-			static::class
-		));
+		$form->setTranslator($this->getPrefixedTranslator());
 
 		$form->addText('username', 'username.field')
 			->setRequired('username.required')
