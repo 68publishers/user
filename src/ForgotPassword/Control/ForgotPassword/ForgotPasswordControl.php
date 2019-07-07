@@ -14,7 +14,7 @@ use SixtyEightPublishers;
  */
 class ForgotPasswordControl extends SixtyEightPublishers\SmartNetteComponent\UI\Control implements SixtyEightPublishers\User\Common\Translator\ITranslatorAware
 {
-	use SixtyEightPublishers\User\Common\Translator\TTranslatorAware;
+	use SixtyEightPublishers\User\Common\Translator\TPrefixedTranslatorAware;
 
 	/** @var \SixtyEightPublishers\User\ForgotPassword\PasswordRequest\IPasswordRequestSender  */
 	private $passwordRequestSender;
@@ -45,10 +45,7 @@ class ForgotPasswordControl extends SixtyEightPublishers\SmartNetteComponent\UI\
 	{
 		$form = new Nette\Application\UI\Form();
 
-		$form->setTranslator(SixtyEightPublishers\User\Common\Translator\PrefixedTranslator::createFromClassName(
-			$this->getTranslator(),
-			static::class
-		));
+		$form->setTranslator($this->getPrefixedTranslator());
 
 		$form->addText('email', 'email.field')
 			->setRequired('email.required')
@@ -71,6 +68,7 @@ class ForgotPasswordControl extends SixtyEightPublishers\SmartNetteComponent\UI\
 	 */
 	public function render(): void
 	{
+		$this->template->setTranslator($this->getPrefixedTranslator());
 		$this->doRender();
 	}
 
