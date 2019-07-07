@@ -83,12 +83,10 @@ final class Authenticator implements Nette\Security\IAuthenticator
 		}
 
 		if (isset($e)) {
-			$this->logger->error((string) $e);
-
 			throw $e;
 		}
 
-		if (NULL === $user) {
+		if (!isset($user)) {
 			throw new Nette\Security\AuthenticationException(sprintf(
 				'User "%s" not found.',
 				$login
