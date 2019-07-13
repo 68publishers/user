@@ -30,12 +30,12 @@ final class CsrfTokenFactory implements ICsrfTokenFactory
 	{
 		$section = $this->session->getSection(__CLASS__);
 
-		if (!isset($session['token'])) {
+		if (!isset($section['token'])) {
 			$section['token'] = Nette\Utils\Random::generate(10);
 		}
 
 		$hash = hash_hmac('sha1', $component . $this->session->getId(), $section['token'], TRUE);
 
-		return str_replace(substr(base64_encode($hash), 0, 8), '/', '_');
+		return str_replace('/', '_', substr(base64_encode($hash), 0, 8));
 	}
 }
