@@ -25,6 +25,9 @@ final class SignInControl extends SixtyEightPublishers\SmartNetteComponent\UI\Co
 	/** @var NULL|string */
 	private $usernamePrefix;
 
+	/** @var string|int|\DateTimeInterface */
+	private $expiration;
+
 	/** @var callable[]  */
 	public $onLoggedIn = [];
 
@@ -56,6 +59,16 @@ final class SignInControl extends SixtyEightPublishers\SmartNetteComponent\UI\Co
 	public function setUsernamePrefix(string $usernamePrefix): void
 	{
 		$this->usernamePrefix = $usernamePrefix;
+	}
+
+	/**
+	 * @param \DateTimeInterface|int|string $expiration
+	 *
+	 * @return void
+	 */
+	public function setExpiration($expiration): void
+	{
+		$this->expiration = $expiration;
 	}
 
 	/**
@@ -110,6 +123,10 @@ final class SignInControl extends SixtyEightPublishers\SmartNetteComponent\UI\Co
 
 			if (!empty($this->usernamePrefix)) {
 				$username = $this->usernamePrefix . SixtyEightPublishers\User\Authentication\Authenticator\AuthenticatorMount::SEPARATOR . $username;
+			}
+
+			if (NULL !== $this->expiration) {
+				$this->user->setExpiration($this->expiration);
 			}
 
 			$this->user->login($username, $password);
