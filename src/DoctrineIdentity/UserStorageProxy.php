@@ -7,6 +7,9 @@ namespace SixtyEightPublishers\User\DoctrineIdentity;
 use Nette;
 use Doctrine;
 
+/**
+ * @method void onEntityNotFound()
+ */
 final class UserStorageProxy implements Nette\Security\IUserStorage
 {
 	use Nette\SmartObject;
@@ -16,6 +19,13 @@ final class UserStorageProxy implements Nette\Security\IUserStorage
 
 	/** @var \Doctrine\ORM\EntityManagerInterface  */
 	private $em;
+
+	/** @var \Nette\Security\Identity|NULL|bool */
+	private $currentIdentity = FALSE;
+
+
+	/** @var callable[] */
+	public $onEntityNotFound = [];
 
 	/**
 	 * @param \Nette\Security\IUserStorage         $userStorage
@@ -81,6 +91,9 @@ final class UserStorageProxy implements Nette\Security\IUserStorage
 	 */
 	public function isAuthenticated(): bool
 	{
+		# Get the identity as first. If the entity is not found then the user can't be authenticated.
+		$this->getIdentity();
+
 		return $this->userStorage->isAuthenticated();
 	}
 
@@ -104,6 +117,7 @@ final class UserStorageProxy implements Nette\Security\IUserStorage
 		}
 
 		$this->userStorage->setIdentity($identity);
+		$this->currentIdentity = FALSE;
 
 		return $this;
 	}
@@ -113,13 +127,28 @@ final class UserStorageProxy implements Nette\Security\IUserStorage
 	 */
 	public function getIdentity(): ?Nette\Security\IIdentity
 	{
-		$identity = $this->userStorage->getIdentity();
-
-		if ($identity instanceof IdentityReference) {
-			$identity = $this->em->getReference($identity->getClassName(), $identity->getId());
+		if (FALSE !== $this->currentIdentity) {
+			return $this->currentIdentity;
 		}
 
-		return $identity;
+		$identity = $this->userStorage->getIdentity();
+
+		if (!$identity instanceof IdentityReference) {
+			return $identity;
+		}
+
+		$identity = $this->em->find($identity->getClassName(), $identity->getId());
+
+		if (!$identity instanceof Nette\Security\IIdentity) {
+			$identity = NULL;
+
+			$this->setAuthenticated(FALSE);
+			$this->setIdentity($identity);
+
+			$this->onEntityNotFound();
+		}
+
+		return $this->currentIdentity = $identity;
 	}
 
 	/**
