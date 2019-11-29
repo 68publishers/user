@@ -90,15 +90,16 @@ final class UserStorageProxy implements Nette\Security\IUserStorage
 	public function setIdentity(?Nette\Security\IIdentity $identity = NULL): self
 	{
 		if (NULL !== $identity) {
-			/** @noinspection PhpDeprecationInspection */
-			$className = Doctrine\Common\Util\ClassUtils::getClass($identity);
-			$metadataFactory = $this->em->getMetadataFactory();
+			try {
+				$metadata = $this->em->getMetadataFactory()->getMetadataFor(get_class($identity));
 
-			if ($metadataFactory->hasMetadataFor($className)) {
 				$identity = new IdentityReference(
-					$className,
-					$metadataFactory->getMetadataFor($className)->getIdentifierValues($identity)
+					$metadata->getName(),
+					$metadata->getIdentifierValues($identity)
 				);
+			} catch (Doctrine\Common\Persistence\Mapping\MappingException $e) {
+				# an empty catch block because we can't test if the MetadataFactory contains a metadata for identity's classname.
+				# The classname can be a Doctrine Proxy and the method `MetadataFactory::hasMetadataFor()` doesn't convert Proxy's classname into real classname.
 			}
 		}
 
