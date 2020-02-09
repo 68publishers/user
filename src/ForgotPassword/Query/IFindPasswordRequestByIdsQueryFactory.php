@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SixtyEightPublishers\User\ForgotPassword\Query;
 
 use Doctrine;
-use SixtyEightPublishers;
 
 interface IFindPasswordRequestByIdsQueryFactory
 {
