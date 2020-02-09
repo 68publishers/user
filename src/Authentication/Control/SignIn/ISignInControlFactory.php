@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace SixtyEightPublishers\User\Authentication\Control\SignIn;
 
-use SixtyEightPublishers;
-
 interface ISignInControlFactory
 {
 	/**
