@@ -76,7 +76,7 @@ class PasswordRequest implements IPasswordRequest
 	 */
 	public function __construct(IUser $user)
 	{
-		$this->id = Ramsey\Uuid\Uuid::uuid1();
+		$this->id = Ramsey\Uuid\Uuid::uuid4();
 		$this->user = $user;
 		$this->status = self::STATUS_CREATED;
 		$this->created = new \DateTime('now', new \DateTimeZone('UTC'));
