@@ -1,6 +1,6 @@
 {
 	"name": "68publishers/user",
-	"description": "Provides user management for your Nette project. Compatible with kdyby/doctrine and kdyby/translation.",
+	"description": "Provides user management for your Nette project.",
 	"keywords": ["68publishers", "user", "management"],
 	"license": "MIT",
 	"authors": [
@@ -14,37 +14,44 @@
 		}
 	],
 	"require": {
-		"php": "~7.1",
-		"nette/di": "~2.4",
-		"nette/utils": "~2.4",
-		"nette/security": "~2.4",
-		"nette/forms": "~2.4",
-		"nette/neon": "~2.4",
-		"nette/application": "~2.4",
-		"nette/http": "~2.4",
-		"tracy/tracy": "~2.4",
-		"68publishers/doctrine-persistence": "^0.1",
-		"68publishers/smart-nette-component": "^0.1",
-		"kdyby/doctrine": "^3.0",
-		"kdyby/translation": "~2.4",
-		"ramsey/uuid": "^3.8",
-		"piwik/device-detector": "^3.10"
+		"php": "^7.3",
+		"68publishers/doctrine-bridge": "^0.1",
+		"68publishers/doctrine-persistence": "^0.2",
+		"68publishers/doctrine-query-objects": "^0.1",
+		"68publishers/smart-nette-component": "^0.2",
+		"68publishers/translation-bridge": "^1.2",
+		"matomo/device-detector": "^4.0",
+		"nette/application": "^3.0.6",
+		"nette/di": "^3.0.3",
+		"nette/forms": "^3.0",
+		"nette/http": "^3.0",
+		"nette/security": "^3.0",
+		"nette/utils": "^3.0",
+		"ramsey/uuid": "^4.1",
+		"symfony/event-dispatcher": "^5.1",
+		"tracy/tracy": "^2.6"
 	},
 	"require-dev": {
+		"roave/security-advisories": "dev-master",
 		"friendsofphp/php-cs-fixer": "^2.0",
-		"nette/tester": "^1.7",
-		"contributte/mailing": "^0.2",
+		"nette/tester": "^2.2",
+		"contributte/mailing": "^0.4",
 		"psr/log": "^1.0"
 	},
 	"suggest": {
 		"contributte/mailing": "If you want to use default mail sender."
 	},
 	"autoload": {
-		"classmap": ["src/"],
-		"files": []
+		"psr-4": {
+			"SixtyEightPublishers\\User\\": "src/"
+		}
 	},
 	"autoload-dev": {
-		"classmap": ["tests/"],
-		"files": []
+		"psr-4": {
+			"SixtyEightPublishers\\User\\Tests\\": "tests/"
+		}
+	},
+	"config": {
+		"sort-packages": true
 	}
 }

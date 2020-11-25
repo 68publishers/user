@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace SixtyEightPublishers\User\DoctrineIdentity;
 
-use Nette;
+use Nette\SmartObject;
+use Nette\Security\IIdentity;
 
-final class IdentityReference implements Nette\Security\IIdentity
+final class IdentityReference implements IIdentity
 {
-	use Nette\SmartObject;
+	use SmartObject;
 
 	/** @var string  */
 	private $className;
@@ -33,8 +34,6 @@ final class IdentityReference implements Nette\Security\IIdentity
 	{
 		return $this->className;
 	}
-
-	/************ interface \Nette\Security\IIdentity ************/
 
 	/**
 	 * {@inheritdoc}

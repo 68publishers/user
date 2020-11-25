@@ -4,80 +4,59 @@ declare(strict_types=1);
 
 namespace SixtyEightPublishers\User\ForgotPassword\PasswordRequest;
 
-use Nette;
-use Doctrine;
-use SixtyEightPublishers;
+use Nette\SmartObject;
+use Doctrine\ORM\EntityManagerInterface;
+use SixtyEightPublishers\DoctrinePersistence\TransactionFactoryInterface;
+use SixtyEightPublishers\DoctrinePersistence\Context\ErrorContextInterface;
+use SixtyEightPublishers\User\ForgotPassword\Entity\PasswordRequestInterface;
+use SixtyEightPublishers\DoctrineQueryObjects\ExecutableQueryObjectFactoryInterface;
+use SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestProcessException;
+use SixtyEightPublishers\User\Common\PasswordHashStrategy\PasswordHashStrategyInterface;
+use SixtyEightPublishers\User\ForgotPassword\Query\FindPasswordRequestByIdsQueryObjectFactoryInterface;
 
-class PasswordRequestManager implements IPasswordRequestManager
+class PasswordRequestManager implements PasswordRequestManagerInterface
 {
-	use Nette\SmartObject;
+	use SmartObject;
 
-	/** @var \Doctrine\ORM\EntityManagerInterface  */
-	private $em;
+	/** @var \SixtyEightPublishers\DoctrinePersistence\TransactionFactoryInterface  */
+	private $transactionFactory;
 
-	/** @var \SixtyEightPublishers\User\Common\PasswordHashStrategy\IPasswordHashStrategy  */
+	/** @var \SixtyEightPublishers\User\Common\PasswordHashStrategy\PasswordHashStrategyInterface  */
 	private $passwordHashStrategy;
 
-	/** @var \SixtyEightPublishers\User\ForgotPassword\Query\IFindPasswordRequestByIdsQueryFactory  */
+	/** @var \SixtyEightPublishers\DoctrineQueryObjects\ExecutableQueryObjectFactoryInterface  */
+	private $executableQueryObjectFactory;
+
+	/** @var \SixtyEightPublishers\User\ForgotPassword\Query\FindPasswordRequestByIdsQueryObjectFactoryInterface  */
 	private $findPasswordRequestByIdsQueryFactory;
 
 	/**
-	 * @param \Doctrine\ORM\EntityManagerInterface                                                  $em
-	 * @param \SixtyEightPublishers\User\Common\PasswordHashStrategy\IPasswordHashStrategy          $passwordHashStrategy
-	 * @param \SixtyEightPublishers\User\ForgotPassword\Query\IFindPasswordRequestByIdsQueryFactory $findPasswordRequestByIdsQueryFactory
+	 * @param \SixtyEightPublishers\DoctrinePersistence\TransactionFactoryInterface                               $transactionFactory
+	 * @param \SixtyEightPublishers\User\Common\PasswordHashStrategy\PasswordHashStrategyInterface                $passwordHashStrategy
+	 * @param \SixtyEightPublishers\DoctrineQueryObjects\ExecutableQueryObjectFactoryInterface                    $executableQueryObjectFactory
+	 * @param \SixtyEightPublishers\User\ForgotPassword\Query\FindPasswordRequestByIdsQueryObjectFactoryInterface $findPasswordRequestByIdsQueryFactory
 	 */
-	public function __construct(
-		Doctrine\ORM\EntityManagerInterface $em,
-		SixtyEightPublishers\User\Common\PasswordHashStrategy\IPasswordHashStrategy $passwordHashStrategy,
-		SixtyEightPublishers\User\ForgotPassword\Query\IFindPasswordRequestByIdsQueryFactory $findPasswordRequestByIdsQueryFactory
-	) {
-		$this->em = $em;
+	public function __construct(TransactionFactoryInterface $transactionFactory, PasswordHashStrategyInterface $passwordHashStrategy, ExecutableQueryObjectFactoryInterface $executableQueryObjectFactory, FindPasswordRequestByIdsQueryObjectFactoryInterface $findPasswordRequestByIdsQueryFactory)
+	{
+		$this->transactionFactory = $transactionFactory;
 		$this->passwordHashStrategy = $passwordHashStrategy;
+		$this->executableQueryObjectFactory = $executableQueryObjectFactory;
 		$this->findPasswordRequestByIdsQueryFactory = $findPasswordRequestByIdsQueryFactory;
 	}
 
 	/**
-	 * @param \SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $request
-	 * @param callable                                                                  $try
-	 *
-	 * @return mixed
-	 * @throws \SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestProcessException
-	 */
-	private function tryCatch(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $request, callable $try)
-	{
-		try {
-			return $try($request);
-		} catch (\Throwable $e) {
-			if (!$e instanceof SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestProcessException) {
-				$e = new SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestProcessException($request->getUser()->getId(), $request->getId(), $e->getMessage(), 0, $e);
-			}
-
-			throw $e;
-		}
-	}
-
-	/*********** interface \SixtyEightPublishers\User\ForgotPassword\IPasswordRequestSender ***********/
-
-	/**
 	 * {@inheritdoc}
 	 */
-	public function findRequest($uid, $rid): SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest
+	public function findRequest($uid, $rid): PasswordRequestInterface
 	{
-		try {
-			/** @var \SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $request */
-			$request = $this->findPasswordRequestByIdsQueryFactory
-				->create($this->em, $uid, $rid)
-				->getOneOrNullResult();
-		} catch (Doctrine\DBAL\DBALException $e) {
-			throw SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestProcessException::missingRequest($uid, $rid);
-		}
+		$request = $this->executableQueryObjectFactory->create($this->findPasswordRequestByIdsQueryFactory->create($uid, $rid))->fetchOne();
 
-		if (NULL === $request) {
-			throw SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestProcessException::missingRequest($uid, $rid);
+		if (!$request instanceof PasswordRequestInterface) {
+			throw PasswordRequestProcessException::missingRequest($uid, $rid);
 		}
 
 		if (TRUE === $request->isExpired()) {
-			throw SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestProcessException::expiredRequest($request->getUser()->getId(), $request->getId());
+			throw PasswordRequestProcessException::expiredRequest($request->getUser()->getId(), $request->getId());
 		}
 
 		return $request;
@@ -85,10 +64,12 @@ class PasswordRequestManager implements IPasswordRequestManager
 
 	/**
 	 * {@inheritdoc}
+	 *
+	 * @throws \Throwable
 	 */
-	public function reset(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $passwordRequest, string $password): void
+	public function reset(PasswordRequestInterface $passwordRequest, string $password): void
 	{
-		$this->tryCatch($passwordRequest, function (SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $passwordRequest) use ($password) {
+		$transaction = $this->transactionFactory->create(function (EntityManagerInterface $em, PasswordRequestInterface $passwordRequest, string $password) {
 			$user = $passwordRequest->getUser();
 
 			if ($this->passwordHashStrategy->needRehash($password)) {
@@ -99,23 +80,50 @@ class PasswordRequestManager implements IPasswordRequestManager
 			$passwordRequest->setStatus($passwordRequest::STATUS_COMPLETED);
 			$user->setPassword($password);
 
-			$this->em->persist($passwordRequest);
-			$this->em->persist($user);
-			$this->em->flush();
+			$em->persist($passwordRequest);
+			$em->persist($user);
+
+			return $user;
 		});
+
+		$transaction->error(static function (ErrorContextInterface $context) use ($passwordRequest) {
+			$e = $context->getError();
+
+			if (!$e instanceof PasswordRequestProcessException) {
+				throw new PasswordRequestProcessException($passwordRequest->getUser()->getId(), $passwordRequest->getId(), $e->getMessage(), 0, $e);
+			}
+		});
+
+		$transaction->withArguments([
+			'passwordRequest' => $passwordRequest,
+			'password' => $password,
+		])->run();
 	}
 
 	/**
 	 * {@inheritdoc}
+	 *
+	 * @throws \Throwable
 	 */
-	public function cancel(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $passwordRequest): void
+	public function cancel(PasswordRequestInterface $passwordRequest): void
 	{
-		$this->tryCatch($passwordRequest, function (SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $passwordRequest) {
+		$transaction = $this->transactionFactory->create(static function (EntityManagerInterface $em, PasswordRequestInterface $passwordRequest) {
 			$passwordRequest->getResetDeviceInfo()->fill();
 			$passwordRequest->setStatus($passwordRequest::STATUS_CANCELED);
 
-			$this->em->persist($passwordRequest);
-			$this->em->flush();
+			$em->persist($passwordRequest);
+
+			return $passwordRequest;
 		});
+
+		$transaction->error(static function (ErrorContextInterface $context) use ($passwordRequest) {
+			$e = $context->getError();
+
+			if (!$e instanceof PasswordRequestProcessException) {
+				throw new PasswordRequestProcessException($passwordRequest->getUser()->getId(), $passwordRequest->getId(), $e->getMessage(), 0, $e);
+			}
+		});
+
+		$transaction->withArguments(['passwordRequest' => $passwordRequest])->run();
 	}
 }

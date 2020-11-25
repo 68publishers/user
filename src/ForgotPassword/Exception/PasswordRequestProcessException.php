@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace SixtyEightPublishers\User\ForgotPassword\Exception;
 
-use SixtyEightPublishers;
+use Throwable;
+use SixtyEightPublishers\User\Common\Exception\RuntimeException;
 
-final class PasswordRequestProcessException extends SixtyEightPublishers\User\Common\Exception\RuntimeException
+final class PasswordRequestProcessException extends RuntimeException
 {
-	const   CODE_MISSING_REQUEST = 2001,
-			CODE_EXPIRED_REQUEST = 2002;
+	public const CODE_MISSING_REQUEST = 2001;
+	public const CODE_EXPIRED_REQUEST = 2002;
 
 	/** @var mixed  */
 	private $uid;
@@ -24,7 +25,7 @@ final class PasswordRequestProcessException extends SixtyEightPublishers\User\Co
 	 * @param int             $code
 	 * @param \Throwable|null $previous
 	 */
-	public function __construct($uid, $rid, string $message, int $code = 0, \Throwable $previous = NULL)
+	public function __construct($uid, $rid, string $message, int $code = 0, Throwable $previous = NULL)
 	{
 		parent::__construct($message, $code, $previous);
 

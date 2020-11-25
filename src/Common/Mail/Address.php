@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SixtyEightPublishers\User\Common\Mail;
 
-use Nette;
+use Nette\SmartObject;
 
 /**
  * @property-read string $email
@@ -12,7 +12,7 @@ use Nette;
  */
 final class Address
 {
-	use Nette\SmartObject;
+	use SmartObject;
 
 	/** @var string  */
 	private $email;

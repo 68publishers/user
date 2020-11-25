@@ -4,27 +4,26 @@ declare(strict_types=1);
 
 namespace SixtyEightPublishers\User\ForgotPassword\Mail;
 
-use Nette;
-use SixtyEightPublishers;
+use Nette\SmartObject;
+use SixtyEightPublishers\User\Common\Mail\Address;
+use SixtyEightPublishers\User\Common\Mail\MailSenderInterface;
 
-final class ForgotPasswordNotRegisteredEmail implements IForgotPasswordNotRegisteredEmail
+final class ForgotPasswordNotRegisteredEmail implements ForgotPasswordNotRegisteredEmailInterface
 {
-	use Nette\SmartObject;
+	use SmartObject;
 
-	const NAME = 'forgot_password_not_registered_email';
+	public const NAME = 'forgot_password_not_registered_email';
 
-	/** @var \SixtyEightPublishers\User\Common\Mail\IMailSender  */
+	/** @var \SixtyEightPublishers\User\Common\Mail\MailSenderInterface  */
 	private $mailSender;
 
 	/**
-	 * @param \SixtyEightPublishers\User\Common\Mail\IMailSender $mailSender
+	 * @param \SixtyEightPublishers\User\Common\Mail\MailSenderInterface $mailSender
 	 */
-	public function __construct(SixtyEightPublishers\User\Common\Mail\IMailSender $mailSender)
+	public function __construct(MailSenderInterface $mailSender)
 	{
 		$this->mailSender = $mailSender;
 	}
-
-	/******** interface \SixtyEightPublishers\User\ForgotPassword\Mail\IForgotPasswordNotRegisteredEmail ********/
 
 	/**
 	 * {@inheritdoc}
@@ -34,7 +33,7 @@ final class ForgotPasswordNotRegisteredEmail implements IForgotPasswordNotRegist
 		$this->mailSender->send(
 			self::NAME,
 			[
-				new SixtyEightPublishers\User\Common\Mail\Address($email),
+				new Address($email),
 			],
 			[
 				'email' => $email,

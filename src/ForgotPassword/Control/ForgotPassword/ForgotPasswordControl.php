@@ -4,19 +4,24 @@ declare(strict_types=1);
 
 namespace SixtyEightPublishers\User\ForgotPassword\Control\ForgotPassword;
 
-use Nette;
-use SixtyEightPublishers;
+use Nette\Application\UI\Form;
+use SixtyEightPublishers\SmartNetteComponent\UI\Control;
+use SixtyEightPublishers\TranslationBridge\TranslatorAwareTrait;
+use SixtyEightPublishers\TranslationBridge\TranslatorAwareInterface;
+use SixtyEightPublishers\User\ForgotPassword\Entity\PasswordRequestInterface;
+use SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestCreationException;
+use SixtyEightPublishers\User\ForgotPassword\PasswordRequest\PasswordRequestSenderInterface;
 
 /**
- * @method void onSend(string $email, ?SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $passwordRequest)
- * @method void onError(SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestCreationException $e, string $email)
- * @method void onFormCreation(Nette\Application\UI\Form $form)
+ * @method void onSend(string $email, ?PasswordRequestInterface $passwordRequest)
+ * @method void onError(PasswordRequestCreationException $e, string $email)
+ * @method void onFormCreation(Form $form)
  */
-class ForgotPasswordControl extends SixtyEightPublishers\SmartNetteComponent\UI\Control implements SixtyEightPublishers\User\Common\Translator\ITranslatorAware
+class ForgotPasswordControl extends Control implements TranslatorAwareInterface
 {
-	use SixtyEightPublishers\User\Common\Translator\TPrefixedTranslatorAware;
+	use TranslatorAwareTrait;
 
-	/** @var \SixtyEightPublishers\User\ForgotPassword\PasswordRequest\IPasswordRequestSender  */
+	/** @var \SixtyEightPublishers\User\ForgotPassword\PasswordRequest\PasswordRequestSenderInterface  */
 	private $passwordRequestSender;
 	
 	/** @var callable[] */
@@ -29,28 +34,35 @@ class ForgotPasswordControl extends SixtyEightPublishers\SmartNetteComponent\UI\
 	public $onFormCreation = [];
 
 	/**
-	 * @param \SixtyEightPublishers\User\ForgotPassword\PasswordRequest\IPasswordRequestSender $passwordRequestSender
+	 * @param \SixtyEightPublishers\User\ForgotPassword\PasswordRequest\PasswordRequestSenderInterface $passwordRequestSender
 	 */
-	public function __construct(SixtyEightPublishers\User\ForgotPassword\PasswordRequest\IPasswordRequestSender $passwordRequestSender)
+	public function __construct(PasswordRequestSenderInterface $passwordRequestSender)
 	{
-		parent::__construct();
-
 		$this->passwordRequestSender = $passwordRequestSender;
 	}
-	
+
+	/**
+	 * @return void
+	 */
+	public function render(): void
+	{
+		$this->template->setTranslator($this->getPrefixedTranslator());
+		$this->doRender();
+	}
+
 	/**
 	 * @return \Nette\Application\UI\Form
 	 */
-	protected function createComponentForm(): Nette\Application\UI\Form
+	protected function createComponentForm(): Form
 	{
-		$form = new Nette\Application\UI\Form();
+		$form = new Form();
 
 		$form->setTranslator($this->getPrefixedTranslator());
 
 		$form->addText('email', 'email.field')
 			->setRequired('email.required')
 			->addRule($form::EMAIL, 'email.rule')
-			->setAttribute('autocomplete', 'username');
+			->setHtmlAttribute('autocomplete', 'username');
 
 		$form->addProtection('protection.rule');
 
@@ -64,22 +76,13 @@ class ForgotPasswordControl extends SixtyEightPublishers\SmartNetteComponent\UI\
 	}
 
 	/**
-	 * @return void
-	 */
-	public function render(): void
-	{
-		$this->template->setTranslator($this->getPrefixedTranslator());
-		$this->doRender();
-	}
-
-	/**
 	 * @internal
 	 *
 	 * @param \Nette\Application\UI\Form $form
 	 *
 	 * @return void
 	 */
-	public function processForm(Nette\Application\UI\Form $form): void
+	public function processForm(Form $form): void
 	{
 		$email = $form->values->email;
 
@@ -87,7 +90,7 @@ class ForgotPasswordControl extends SixtyEightPublishers\SmartNetteComponent\UI\
 			$request = $this->passwordRequestSender->send($email);
 
 			$this->onSend($email, $request);
-		} catch (SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestCreationException $e) {
+		} catch (PasswordRequestCreationException $e) {
 			$this->onError($e, $email);
 		}
 	}

@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace SixtyEightPublishers\User\Common\Logger;
 
-use Nette;
+use Nette\SmartObject;
 
-final class NullLogger implements ILogger
+final class NullLogger implements LoggerInterface
 {
-	use Nette\SmartObject;
-
-	/*************** interface \SixtyEightPublishers\User\Common\Logger\ILogger ***************/
+	use SmartObject;
 
 	/**
 	 * {@inheritdoc}

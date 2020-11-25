@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace SixtyEightPublishers\User\DoctrineIdentity\Exception;
 
-use SixtyEightPublishers;
+use BadMethodCallException;
+use SixtyEightPublishers\User\Common\Exception\ExceptionInterface;
 
-final class UnimplementedMethodException extends \BadMethodCallException implements SixtyEightPublishers\User\Common\Exception\IException
+final class UnimplementedMethodException extends BadMethodCallException implements ExceptionInterface
 {
 	/**
 	 * @param string $className
