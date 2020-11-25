@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace SixtyEightPublishers\User\Common\Mail;
 
-use Nette;
+use Nette\SmartObject;
 
-final class NullMailSender implements IMailSender
+final class NullMailSender implements MailSenderInterface
 {
-	use Nette\SmartObject;
-
-	/*********** interface \SixtyEightPublishers\User\Common\Mail\IMailSender ***********/
+	use SmartObject;
 
 	/**
 	 * {@inheritdoc}

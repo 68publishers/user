@@ -7,29 +7,27 @@ namespace SixtyEightPublishers\User\ForgotPassword\Mail;
 use Nette;
 use SixtyEightPublishers;
 
-final class PasswordHasBeenResetEmail implements IPasswordHasBeenResetEmail
+final class PasswordHasBeenResetEmail implements PasswordHasBeenResetEmailInterface
 {
 	use Nette\SmartObject;
 
-	const NAME = 'password_has_been_reset_email';
+	public const NAME = 'password_has_been_reset_email';
 
-	/** @var \SixtyEightPublishers\User\Common\Mail\IMailSender  */
+	/** @var \SixtyEightPublishers\User\Common\Mail\MailSenderInterface  */
 	private $mailSender;
 
 	/**
-	 * @param \SixtyEightPublishers\User\Common\Mail\IMailSender $mailSender
+	 * @param \SixtyEightPublishers\User\Common\Mail\MailSenderInterface $mailSender
 	 */
-	public function __construct(SixtyEightPublishers\User\Common\Mail\IMailSender $mailSender)
+	public function __construct(SixtyEightPublishers\User\Common\Mail\MailSenderInterface $mailSender)
 	{
 		$this->mailSender = $mailSender;
 	}
 
-	/******** interface \SixtyEightPublishers\User\ForgotPassword\Mail\IPasswordResetEmail ********/
-
 	/**
 	 * {@inheritdoc}
 	 */
-	public function send(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IUser $user): void
+	public function send(SixtyEightPublishers\User\ForgotPassword\Entity\UserInterface $user): void
 	{
 		$this->mailSender->send(
 			self::NAME,

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace SixtyEightPublishers\User\Common\Logger;
 
-use Psr;
-use Nette;
+use Nette\SmartObject;
+use Psr\Log\LoggerInterface as PsrLoggerInterface;
 
-final class PsrLogger implements ILogger
+final class PsrLogger implements LoggerInterface
 {
-	use Nette\SmartObject;
+	use SmartObject;
 
 	/** @var \Psr\Log\LoggerInterface  */
 	private $logger;
@@ -17,12 +17,10 @@ final class PsrLogger implements ILogger
 	/**
 	 * @param \Psr\Log\LoggerInterface $logger
 	 */
-	public function __construct(Psr\Log\LoggerInterface $logger)
+	public function __construct(PsrLoggerInterface $logger)
 	{
 		$this->logger = $logger;
 	}
-
-	/*************** interface \SixtyEightPublishers\User\Common\Logger\ILogger ***************/
 
 	/**
 	 * {@inheritdoc}

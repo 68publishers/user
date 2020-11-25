@@ -4,15 +4,21 @@ declare(strict_types=1);
 
 namespace SixtyEightPublishers\User\DoctrineIdentity;
 
-use Nette;
-use Doctrine;
+use Nette\SmartObject;
+use Nette\Security\IIdentity;
+use Nette\Security\IUserStorage;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\Mapping\MappingException;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use SixtyEightPublishers\User\DoctrineIdentity\Event\IdentityNotFoundEvent;
+use SixtyEightPublishers\User\DoctrineIdentity\Exception\UnimplementedMethodException;
 
 /**
- * @method void onEntityNotFound()
+ * @method void onIdentityNotFound(IdentityReference $identityReference)
  */
-final class UserStorageProxy implements Nette\Security\IUserStorage
+final class UserStorageProxy implements IUserStorage
 {
-	use Nette\SmartObject;
+	use SmartObject;
 
 	/** @var \Nette\Security\IUserStorage  */
 	private $userStorage;
@@ -20,21 +26,25 @@ final class UserStorageProxy implements Nette\Security\IUserStorage
 	/** @var \Doctrine\ORM\EntityManagerInterface  */
 	private $em;
 
+	/** @var \Symfony\Contracts\EventDispatcher\EventDispatcherInterface  */
+	private $eventDispatcher;
+
 	/** @var \Nette\Security\Identity|NULL|bool */
 	private $currentIdentity = FALSE;
 
-
 	/** @var callable[] */
-	public $onEntityNotFound = [];
+	public $onIdentityNotFound = [];
 
 	/**
-	 * @param \Nette\Security\IUserStorage         $userStorage
-	 * @param \Doctrine\ORM\EntityManagerInterface $em
+	 * @param \Nette\Security\IUserStorage                                $userStorage
+	 * @param \Doctrine\ORM\EntityManagerInterface                        $em
+	 * @param \Symfony\Contracts\EventDispatcher\EventDispatcherInterface $eventDispatcher
 	 */
-	public function __construct(Nette\Security\IUserStorage $userStorage, Doctrine\ORM\EntityManagerInterface $em)
+	public function __construct(IUserStorage $userStorage, EntityManagerInterface $em, EventDispatcherInterface $eventDispatcher)
 	{
 		$this->userStorage = $userStorage;
 		$this->em = $em;
+		$this->eventDispatcher = $eventDispatcher;
 	}
 
 	/**
@@ -47,16 +57,14 @@ final class UserStorageProxy implements Nette\Security\IUserStorage
 	 */
 	public function setNamespace(string $namespace): self
 	{
-		if (!is_callable([ $this->userStorage, 'setNamespace' ])) {
-			throw Exception\UnimplementedMethodException::unimplementedMethod(get_class($this->userStorage), 'setNamespace');
+		if (!is_callable([$this->userStorage, 'setNamespace'])) {
+			throw UnimplementedMethodException::unimplementedMethod(get_class($this->userStorage), 'setNamespace');
 		}
 
-		/** @noinspection PhpUndefinedMethodInspection */
 		$this->userStorage->setNamespace($namespace);
 
 		return $this;
 	}
-
 
 	/**
 	 * For compatibility with default implementation Nette\Http\UserStorage
@@ -66,11 +74,10 @@ final class UserStorageProxy implements Nette\Security\IUserStorage
 	 */
 	public function getNamespace(): string
 	{
-		if (!is_callable([ $this->userStorage, 'getNamespace' ])) {
+		if (!is_callable([$this->userStorage, 'getNamespace'])) {
 			throw Exception\UnimplementedMethodException::unimplementedMethod(get_class($this->userStorage), 'getNamespace');
 		}
 
-		/** @noinspection PhpUndefinedMethodInspection */
 		return $this->userStorage->getNamespace();
 	}
 
@@ -100,7 +107,7 @@ final class UserStorageProxy implements Nette\Security\IUserStorage
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setIdentity(?Nette\Security\IIdentity $identity = NULL): self
+	public function setIdentity(?IIdentity $identity = NULL): self
 	{
 		if (NULL !== $identity) {
 			try {
@@ -110,7 +117,7 @@ final class UserStorageProxy implements Nette\Security\IUserStorage
 					$metadata->getName(),
 					$metadata->getIdentifierValues($identity)
 				);
-			} catch (Doctrine\Common\Persistence\Mapping\MappingException $e) {
+			} catch (MappingException $e) {
 				# an empty catch block because we can't test if the MetadataFactory contains a metadata for identity's classname.
 				# The classname can be a Doctrine Proxy and the method `MetadataFactory::hasMetadataFor()` doesn't convert Proxy's classname into real classname.
 			}
@@ -125,27 +132,30 @@ final class UserStorageProxy implements Nette\Security\IUserStorage
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getIdentity(): ?Nette\Security\IIdentity
+	public function getIdentity(): ?IIdentity
 	{
 		if (FALSE !== $this->currentIdentity) {
 			return $this->currentIdentity;
 		}
 
-		$identity = $this->userStorage->getIdentity();
+		$identityReference = $this->userStorage->getIdentity();
 
-		if (!$identity instanceof IdentityReference) {
-			return $identity;
+		if (!$identityReference instanceof IdentityReference) {
+			return $identityReference;
 		}
 
-		$identity = $this->em->find($identity->getClassName(), $identity->getId());
+		$identity = $this->em->find($identityReference->getClassName(), $identityReference->getId());
 
-		if (!$identity instanceof Nette\Security\IIdentity) {
+		if (!$identity instanceof IIdentity) {
 			$identity = NULL;
 
 			$this->setAuthenticated(FALSE);
 			$this->setIdentity($identity);
 
-			$this->onEntityNotFound();
+			$namespace = $this->getNamespace();
+
+			$this->eventDispatcher->dispatch(new IdentityNotFoundEvent($identityReference, empty($namespace) ? NULL : $namespace), IdentityNotFoundEvent::NAME);
+			$this->onIdentityNotFound($identityReference);
 		}
 
 		return $this->currentIdentity = $identity;

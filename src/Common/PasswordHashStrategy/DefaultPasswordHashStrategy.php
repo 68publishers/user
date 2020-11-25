@@ -4,31 +4,27 @@ declare(strict_types=1);
 
 namespace SixtyEightPublishers\User\Common\PasswordHashStrategy;
 
-use Nette;
+use Nette\Security\Passwords;
 
-final class DefaultPasswordHashStrategy implements IPasswordHashStrategy
+final class DefaultPasswordHashStrategy implements PasswordHashStrategyInterface
 {
-	use Nette\SmartObject;
-
-	/** @var array  */
-	private $options;
+	/** @var \Nette\Security\Passwords  */
+	private $passwords;
 
 	/**
 	 * @param array $options
 	 */
 	public function __construct(array $options = [])
 	{
-		$this->options = $options;
+		$this->passwords = new Passwords(PASSWORD_DEFAULT, $options);
 	}
-
-	/*********** interface \SixtyEightPublishers\User\Common\PasswordHashStrategy\IPasswordHashStrategy ***********/
 
 	/**
 	 * {@inheritdoc}
 	 */
 	public function hash(string $password): string
 	{
-		return Nette\Security\Passwords::hash($password, $this->options);
+		return $this->passwords->hash($password);
 	}
 
 	/**
@@ -36,7 +32,7 @@ final class DefaultPasswordHashStrategy implements IPasswordHashStrategy
 	 */
 	public function needRehash(string $password): bool
 	{
-		return Nette\Security\Passwords::needsRehash($password, $this->options);
+		return $this->passwords->needsRehash($password);
 	}
 
 	/**
@@ -44,6 +40,6 @@ final class DefaultPasswordHashStrategy implements IPasswordHashStrategy
 	 */
 	public function verify(string $password, string $hash): bool
 	{
-		return Nette\Security\Passwords::verify($password, $hash);
+		return $this->passwords->verify($password, $hash);
 	}
 }

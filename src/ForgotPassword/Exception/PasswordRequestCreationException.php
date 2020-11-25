@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace SixtyEightPublishers\User\ForgotPassword\Exception;
 
-use SixtyEightPublishers;
+use Throwable;
+use SixtyEightPublishers\User\Common\Exception\RuntimeException;
 
-final class PasswordRequestCreationException extends SixtyEightPublishers\User\Common\Exception\RuntimeException
+final class PasswordRequestCreationException extends RuntimeException
 {
-	const   CODE_NOT_REGISTERED_EMAIL = 1001;
+	public const CODE_NOT_REGISTERED_EMAIL = 1001;
 
 	/**
 	 * @param string $email
@@ -28,7 +29,7 @@ final class PasswordRequestCreationException extends SixtyEightPublishers\User\C
 	 *
 	 * @return \SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestCreationException
 	 */
-	public static function from(\Throwable $e): self
+	public static function from(Throwable $e): self
 	{
 		return !$e instanceof self ? new static($e->getMessage(), $e->getCode(), $e) : $e;
 	}

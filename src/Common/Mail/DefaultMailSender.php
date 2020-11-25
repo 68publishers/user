@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace SixtyEightPublishers\User\Common\Mail;
 
-use Nette;
-use Contributte;
-use SixtyEightPublishers;
+use Nette\SmartObject;
+use Contributte\Mailing\IMailBuilderFactory;
+use SixtyEightPublishers\User\Common\Exception\MailSendingException;
 
-final class DefaultMailSender implements IMailSender
+final class DefaultMailSender implements MailSenderInterface
 {
-	use Nette\SmartObject;
+	use SmartObject;
 
 	/** @var string  */
 	private $templatesDir;
@@ -30,19 +30,13 @@ final class DefaultMailSender implements IMailSender
 	 * @param array                                          $subjects
 	 * @param \Contributte\Mailing\IMailBuilderFactory       $mailBuilderFactory
 	 */
-	public function __construct(
-		string $templatesDir,
-		Address $from,
-		array $subjects = [],
-		Contributte\Mailing\IMailBuilderFactory $mailBuilderFactory
-	) {
+	public function __construct(string $templatesDir, Address $from, array $subjects, IMailBuilderFactory $mailBuilderFactory)
+	{
 		$this->templatesDir = rtrim($templatesDir, '\\/');
 		$this->from = $from;
 		$this->subjects = $subjects;
 		$this->mailBuilderFactory = $mailBuilderFactory;
 	}
-
-	/*********** interface \SixtyEightPublishers\User\Common\Mail\IMailSender ***********/
 
 	/**
 	 * {@inheritdoc}
@@ -52,7 +46,7 @@ final class DefaultMailSender implements IMailSender
 		$file = $this->templatesDir . '/' . $mailName . '.latte';
 
 		if (!file_exists($file)) {
-			throw new SixtyEightPublishers\User\Common\Exception\MailSendingException(sprintf(
+			throw new MailSendingException(sprintf(
 				'Missing template for mail "%s"',
 				$mailName
 			));

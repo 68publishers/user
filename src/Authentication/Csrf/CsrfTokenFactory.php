@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace SixtyEightPublishers\User\Authentication\Csrf;
 
-use Nette;
+use Nette\SmartObject;
+use Nette\Http\Session;
+use Nette\Utils\Random;
 
-final class CsrfTokenFactory implements ICsrfTokenFactory
+final class CsrfTokenFactory implements CsrfTokenFactoryInterface
 {
-	use Nette\SmartObject;
+	use SmartObject;
 
 	/** @var \Nette\Http\Session  */
 	private $session;
@@ -16,12 +18,10 @@ final class CsrfTokenFactory implements ICsrfTokenFactory
 	/**
 	 * @param \Nette\Http\Session $session
 	 */
-	public function __construct(Nette\Http\Session $session)
+	public function __construct(Session $session)
 	{
 		$this->session = $session;
 	}
-
-	/************** interface \SixtyEightPublishers\User\Authentication\Csrf\ICsrfTokenFactory **************/
 
 	/**
 	 * {@inheritdoc}
@@ -31,7 +31,7 @@ final class CsrfTokenFactory implements ICsrfTokenFactory
 		$section = $this->session->getSection(__CLASS__);
 
 		if (!isset($section['token'])) {
-			$section['token'] = Nette\Utils\Random::generate(10);
+			$section['token'] = Random::generate(10);
 		}
 
 		$hash = hash_hmac('sha1', $component . $this->session->getId(), $section['token'], TRUE);

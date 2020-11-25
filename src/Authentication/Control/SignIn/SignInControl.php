@@ -4,22 +4,29 @@ declare(strict_types=1);
 
 namespace SixtyEightPublishers\User\Authentication\Control\SignIn;
 
-use Nette;
-use SixtyEightPublishers;
+use Nette\Security\User;
+use Nette\Application\UI\Form;
+use Nette\Security\IAuthenticator;
+use Nette\Security\AuthenticationException;
+use SixtyEightPublishers\SmartNetteComponent\UI\Control;
+use SixtyEightPublishers\User\Common\Logger\LoggerInterface;
+use SixtyEightPublishers\TranslationBridge\TranslatorAwareTrait;
+use SixtyEightPublishers\TranslationBridge\TranslatorAwareInterface;
+use SixtyEightPublishers\User\Authentication\Authenticator\AuthenticatorMount;
 
 /**
  * @method void onLoggedIn()
- * @method void onAuthenticationFail(Nette\Security\AuthenticationException $e)
- * @method void onFormCreation(Nette\Application\UI\Form $form)
+ * @method void onAuthenticationFail(AuthenticationException $e)
+ * @method void onFormCreation(Form $form)
  */
-final class SignInControl extends SixtyEightPublishers\SmartNetteComponent\UI\Control implements SixtyEightPublishers\User\Common\Translator\ITranslatorAware
+final class SignInControl extends Control implements TranslatorAwareInterface
 {
-	use SixtyEightPublishers\User\Common\Translator\TPrefixedTranslatorAware;
+	use TranslatorAwareTrait;
 
 	/** @var \Nette\Security\User  */
 	private $user;
 
-	/** @var \SixtyEightPublishers\User\Common\Logger\ILogger  */
+	/** @var \SixtyEightPublishers\User\Common\Logger\LoggerInterface  */
 	private $logger;
 
 	/** @var NULL|string */
@@ -38,13 +45,11 @@ final class SignInControl extends SixtyEightPublishers\SmartNetteComponent\UI\Co
 	public $onFormCreation = [];
 
 	/**
-	 * @param \Nette\Security\User                             $user
-	 * @param \SixtyEightPublishers\User\Common\Logger\ILogger $logger
+	 * @param \Nette\Security\User                                     $user
+	 * @param \SixtyEightPublishers\User\Common\Logger\LoggerInterface $logger
 	 */
-	public function __construct(Nette\Security\User $user, SixtyEightPublishers\User\Common\Logger\ILogger $logger)
+	public function __construct(User $user, LoggerInterface $logger)
 	{
-		parent::__construct();
-
 		$this->user = $user;
 		$this->logger = $logger;
 	}
@@ -83,19 +88,19 @@ final class SignInControl extends SixtyEightPublishers\SmartNetteComponent\UI\Co
 	/**
 	 * @return \Nette\Application\UI\Form
 	 */
-	protected function createComponentForm(): Nette\Application\UI\Form
+	protected function createComponentForm(): Form
 	{
-		$form = new Nette\Application\UI\Form();
+		$form = new Form();
 
 		$form->setTranslator($this->getPrefixedTranslator());
 
 		$form->addText('username', 'username.field')
 			->setRequired('username.required')
-			->setAttribute('autocomplete', 'username');
+			->setHtmlAttribute('autocomplete', 'username');
 
 		$form->addPassword('password', 'password.field')
 			->setRequired('password.required')
-			->setAttribute('autocomplete', 'current-password');
+			->setHtmlAttribute('autocomplete', 'current-password');
 
 		$form->addProtection('protection.rule');
 
@@ -115,14 +120,14 @@ final class SignInControl extends SixtyEightPublishers\SmartNetteComponent\UI\Co
 	 *
 	 * @return void
 	 */
-	public function processForm(Nette\Application\UI\Form $form): void
+	public function processForm(Form $form): void
 	{
 		try {
 			$username = $form->values->username;
 			$password = $form->values->password;
 
 			if (!empty($this->usernamePrefix)) {
-				$username = $this->usernamePrefix . SixtyEightPublishers\User\Authentication\Authenticator\AuthenticatorMount::SEPARATOR . $username;
+				$username = $this->usernamePrefix . AuthenticatorMount::SEPARATOR . $username;
 			}
 
 			if (NULL !== $this->expiration) {
@@ -131,8 +136,8 @@ final class SignInControl extends SixtyEightPublishers\SmartNetteComponent\UI\Co
 
 			$this->user->login($username, $password);
 			$this->onLoggedIn();
-		} catch (Nette\Security\AuthenticationException $e) {
-			if (Nette\Security\IAuthenticator::FAILURE === $e->getCode()) {
+		} catch (AuthenticationException $e) {
+			if (IAuthenticator::FAILURE === $e->getCode()) {
 				$this->logger->error((string) $e);
 			}
 

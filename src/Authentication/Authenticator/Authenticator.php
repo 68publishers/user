@@ -4,30 +4,58 @@ declare(strict_types=1);
 
 namespace SixtyEightPublishers\User\Authentication\Authenticator;
 
-use Nette;
-use Doctrine;
-use SixtyEightPublishers;
+use Nette\SmartObject;
+use Nette\Security\IIdentity;
+use Nette\Security\IAuthenticator;
+use Doctrine\ORM\NonUniqueResultException;
+use Nette\Security\AuthenticationException;
+use Doctrine\DBAL\Exception as DBALException;
+use SixtyEightPublishers\User\Authentication\Entity\UserInterface;
+use SixtyEightPublishers\DoctrineQueryObjects\ExecutableQueryObjectFactoryInterface;
+use SixtyEightPublishers\User\Common\PasswordHashStrategy\PasswordHashStrategyInterface;
+use SixtyEightPublishers\User\Authentication\Query\AuthenticatorQueryObjectFactoryInterface;
 
-final class Authenticator implements Nette\Security\IAuthenticator
+final class Authenticator implements IAuthenticator
 {
-	use Nette\SmartObject;
+	use SmartObject;
 
-	/** @var \SixtyEightPublishers\User\Authentication\Query\IAuthenticatorQueryFactory  */
+	/** @var \SixtyEightPublishers\DoctrineQueryObjects\ExecutableQueryObjectFactoryInterface  */
+	private $executableQueryObjectFactory;
+
+	/** @var \SixtyEightPublishers\User\Authentication\Query\AuthenticatorQueryObjectFactoryInterface  */
 	private $authenticatorQueryFactory;
 
-	/** @var \SixtyEightPublishers\User\Common\PasswordHashStrategy\IPasswordHashStrategy  */
+	/** @var \SixtyEightPublishers\User\Common\PasswordHashStrategy\PasswordHashStrategyInterface  */
 	private $passwordHashStrategy;
 
 	/**
-	 * @param \SixtyEightPublishers\User\Authentication\Query\IAuthenticatorQueryFactory   $authenticatorQueryFactory
-	 * @param \SixtyEightPublishers\User\Common\PasswordHashStrategy\IPasswordHashStrategy $passwordHashStrategy
+	 * @param \SixtyEightPublishers\DoctrineQueryObjects\ExecutableQueryObjectFactoryInterface         $executableQueryObjectFactory
+	 * @param \SixtyEightPublishers\User\Authentication\Query\AuthenticatorQueryObjectFactoryInterface $authenticatorQueryFactory
+	 * @param \SixtyEightPublishers\User\Common\PasswordHashStrategy\PasswordHashStrategyInterface     $passwordHashStrategy
 	 */
-	public function __construct(
-		SixtyEightPublishers\User\Authentication\Query\IAuthenticatorQueryFactory $authenticatorQueryFactory,
-		SixtyEightPublishers\User\Common\PasswordHashStrategy\IPasswordHashStrategy $passwordHashStrategy
-	) {
+	public function __construct(ExecutableQueryObjectFactoryInterface $executableQueryObjectFactory, AuthenticatorQueryObjectFactoryInterface $authenticatorQueryFactory, PasswordHashStrategyInterface $passwordHashStrategy)
+	{
+		$this->executableQueryObjectFactory = $executableQueryObjectFactory;
 		$this->authenticatorQueryFactory = $authenticatorQueryFactory;
 		$this->passwordHashStrategy = $passwordHashStrategy;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function authenticate(array $credentials): IIdentity
+	{
+		[ $login, $password ] = $this->validateCredentials($credentials);
+		$user = $this->findUser($login);
+
+		if (FALSE === $this->passwordHashStrategy->verify($password, $user->getPassword())) {
+			throw new AuthenticationException(sprintf(
+				'Invalid password for user "%s"',
+				$login
+			), self::INVALID_CREDENTIAL);
+		}
+
+		return $user;
 	}
 
 	/**
@@ -39,14 +67,14 @@ final class Authenticator implements Nette\Security\IAuthenticator
 	private function validateCredentials(array $credentials): array
 	{
 		if (!isset($credentials[self::USERNAME])) {
-			throw new Nette\Security\AuthenticationException(sprintf(
+			throw new AuthenticationException(sprintf(
 				'Missing login field in credentials (key %s)',
 				self::USERNAME
 			), self::FAILURE);
 		}
 
 		if (!isset($credentials[self::PASSWORD])) {
-			throw new Nette\Security\AuthenticationException(sprintf(
+			throw new AuthenticationException(sprintf(
 				'Missing password field in credentials (key %s)',
 				self::PASSWORD
 			), self::FAILURE);
@@ -61,22 +89,20 @@ final class Authenticator implements Nette\Security\IAuthenticator
 	/**
 	 * @param string $login
 	 *
-	 * @return \SixtyEightPublishers\User\Authentication\DoctrineEntity\IUser
+	 * @return \SixtyEightPublishers\User\Authentication\Entity\UserInterface
 	 * @throws \Nette\Security\AuthenticationException
 	 */
-	private function findUser(string $login): SixtyEightPublishers\User\Authentication\DoctrineEntity\IUser
+	private function findUser(string $login): UserInterface
 	{
 		try {
-			$user = $this->authenticatorQueryFactory
-				->create($login)
-				->getOneOrNullResult();
-		} catch (Doctrine\ORM\NonUniqueResultException $e) {
-			$e = new Nette\Security\AuthenticationException(sprintf(
+			$user = $this->executableQueryObjectFactory->create($this->authenticatorQueryFactory->create($login))->fetchOne();
+		} catch (NonUniqueResultException $e) {
+			$e = new AuthenticationException(sprintf(
 				'User\'s login field is not unique! Value was "%s"',
 				$login
 			), self::FAILURE, $e);
-		} catch (Doctrine\DBAL\DBALException $e) {
-			$e = new Nette\Security\AuthenticationException(sprintf(
+		} catch (DBALException $e) {
+			$e = new AuthenticationException(sprintf(
 				'DBAL throws unexpected exception, login values was "%s"',
 				$login
 			), self::FAILURE, $e);
@@ -87,30 +113,10 @@ final class Authenticator implements Nette\Security\IAuthenticator
 		}
 
 		if (!isset($user)) {
-			throw new Nette\Security\AuthenticationException(sprintf(
+			throw new AuthenticationException(sprintf(
 				'User "%s" not found.',
 				$login
 			), self::IDENTITY_NOT_FOUND);
-		}
-
-		return $user;
-	}
-
-	/************* interface \Nette\Security\IAuthenticator *************/
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function authenticate(array $credentials): Nette\Security\IIdentity
-	{
-		[ $login, $password ] = $this->validateCredentials($credentials);
-		$user = $this->findUser($login);
-
-		if (FALSE === $this->passwordHashStrategy->verify($password, $user->getPassword())) {
-			throw new Nette\Security\AuthenticationException(sprintf(
-				'Invalid password for user "%s"',
-				$login
-			), self::INVALID_CREDENTIAL);
 		}
 
 		return $user;

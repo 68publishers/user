@@ -4,21 +4,20 @@ declare(strict_types=1);
 
 namespace SixtyEightPublishers\User\Common\Logger;
 
-use Nette;
-use Tracy;
+use Tracy\ILogger;
+use Tracy\Debugger;
+use Nette\SmartObject;
 
-final class TracyLogger implements ILogger
+final class TracyLogger implements LoggerInterface
 {
-	use Nette\SmartObject;
-
-	/*************** interface \SixtyEightPublishers\User\Common\Logger\ILogger ***************/
+	use SmartObject;
 
 	/**
 	 * {@inheritdoc}
 	 */
 	public function error(string $message): void
 	{
-		Tracy\Debugger::log($message, Tracy\ILogger::ERROR);
+		Debugger::log($message, ILogger::ERROR);
 	}
 
 	/**
@@ -26,7 +25,7 @@ final class TracyLogger implements ILogger
 	 */
 	public function notice(string $message): void
 	{
-		Tracy\Debugger::log($message, Tracy\ILogger::WARNING);
+		Debugger::log($message, ILogger::WARNING);
 	}
 
 	/**
@@ -34,6 +33,6 @@ final class TracyLogger implements ILogger
 	 */
 	public function info(string $message): void
 	{
-		Tracy\Debugger::log($message, Tracy\ILogger::INFO);
+		Debugger::log($message, ILogger::INFO);
 	}
 }

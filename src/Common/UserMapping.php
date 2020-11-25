@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace SixtyEightPublishers\User\Common;
 
-use SixtyEightPublishers;
+use ArrayAccess;
+use SixtyEightPublishers\User\Common\Exception\RuntimeException;
+use SixtyEightPublishers\User\Common\Exception\InvalidArgumentException;
 
-final class UserMapping implements \ArrayAccess
+final class UserMapping implements ArrayAccess
 {
-	const 	FIELD_ID = 'id',
-			FILED_EMAIL = 'email',
-			FIELD_PASSWORD = 'password',
-			FIELD_LOGIN = 'login';
+	public const FIELD_ID = 'id';
+	public const FILED_EMAIL = 'email';
+	public const FIELD_PASSWORD = 'password';
+	public const FIELD_LOGIN = 'login';
 
 	/** @var string  */
 	private $className;
@@ -60,7 +62,7 @@ final class UserMapping implements \ArrayAccess
 	public function __get($name): string
 	{
 		if (!$this->__isset($name)) {
-			throw new SixtyEightPublishers\User\Common\Exception\InvalidArgumentException(sprintf(
+			throw new InvalidArgumentException(sprintf(
 				'Missing field with name "%s"',
 				$name
 			));
@@ -69,7 +71,34 @@ final class UserMapping implements \ArrayAccess
 		return $this->fields[$name];
 	}
 
-	/**************** interface \ArrayAccess ****************/
+	/**
+	 * @param mixed $name
+	 * @param mixed $value
+	 *
+	 * @return void
+	 * @throws \SixtyEightPublishers\User\Common\Exception\RuntimeException
+	 */
+	public function __set($name, $value): void
+	{
+		throw new RuntimeException(sprintf(
+			'Calling of method %s is not supported.',
+			__METHOD__
+		));
+	}
+
+	/**
+	 * @param mixed $name
+	 *
+	 * @return void
+	 * @throws \SixtyEightPublishers\User\Common\Exception\RuntimeException
+	 */
+	public function __unset($name): void
+	{
+		throw new RuntimeException(sprintf(
+			'Calling of method %s is not supported.',
+			__METHOD__
+		));
+	}
 
 	/**
 	 * {@inheritdoc}
@@ -90,22 +119,16 @@ final class UserMapping implements \ArrayAccess
 	/**
 	 * {@inheritdoc}
 	 */
-	public function offsetSet($offset, $value)
+	public function offsetSet($offset, $value): void
 	{
-		throw new SixtyEightPublishers\User\Common\Exception\RuntimeException(sprintf(
-			'Calling of method %s is not supported.',
-			__METHOD__
-		));
+		$this->__set($offset, $value);
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function offsetUnset($offset)
+	public function offsetUnset($offset): void
 	{
-		throw new SixtyEightPublishers\User\Common\Exception\RuntimeException(sprintf(
-			'Calling of method %s is not supported.',
-			__METHOD__
-		));
+		$this->__unset($offset);
 	}
 }

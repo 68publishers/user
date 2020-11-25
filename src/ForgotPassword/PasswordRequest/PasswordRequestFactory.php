@@ -4,65 +4,76 @@ declare(strict_types=1);
 
 namespace SixtyEightPublishers\User\ForgotPassword\PasswordRequest;
 
-use Nette;
-use Doctrine;
-use SixtyEightPublishers;
+use Nette\SmartObject;
+use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\EntityManagerInterface;
+use SixtyEightPublishers\User\ForgotPassword\Entity\UserInterface;
+use SixtyEightPublishers\User\ForgotPassword\Entity\PasswordRequest;
+use SixtyEightPublishers\DoctrinePersistence\TransactionFactoryInterface;
+use SixtyEightPublishers\DoctrineQueryObjects\ResultSet\ResultSetOptions;
+use SixtyEightPublishers\DoctrinePersistence\Context\ErrorContextInterface;
+use SixtyEightPublishers\User\ForgotPassword\Entity\PasswordRequestInterface;
+use SixtyEightPublishers\DoctrineQueryObjects\ExecutableQueryObjectFactoryInterface;
+use SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestCreationException;
+use SixtyEightPublishers\User\ForgotPassword\Query\GetUserByEmailQueryObjectFactoryInterface;
+use SixtyEightPublishers\User\ForgotPassword\Query\CancelPasswordRequestsByUserQueryObjectFactoryInterface;
 
-class PasswordRequestFactory implements IPasswordRequestFactory
+class PasswordRequestFactory implements PasswordRequestFactoryInterface
 {
-	use Nette\SmartObject;
+	use SmartObject;
 
-	/** @var \Doctrine\ORM\EntityManagerInterface  */
-	private $em;
-
-	/** @var \SixtyEightPublishers\DoctrinePersistence\Transaction\ITransactionFactory  */
+	/** @var \SixtyEightPublishers\DoctrinePersistence\TransactionFactoryInterface  */
 	private $transactionFactory;
 
-	/** @var \SixtyEightPublishers\User\ForgotPassword\Query\IGetUserByEmailQueryFactory  */
+	/** @var \SixtyEightPublishers\DoctrineQueryObjects\ExecutableQueryObjectFactoryInterface  */
+	private $executableQueryObjectFactory;
+
+	/** @var \SixtyEightPublishers\User\ForgotPassword\Query\GetUserByEmailQueryObjectFactoryInterface  */
 	private $getUserByEmailQueryFactory;
 
-	/** @var \SixtyEightPublishers\User\ForgotPassword\Query\ICancelPasswordRequestsByUserQueryFactory  */
+	/** @var \SixtyEightPublishers\User\ForgotPassword\Query\CancelPasswordRequestsByUserQueryObjectFactoryInterface  */
 	private $cancelPasswordRequestsByUserQueryFactory;
 
 	/**
-	 * @param \Doctrine\ORM\EntityManagerInterface                                                      $em
-	 * @param \SixtyEightPublishers\DoctrinePersistence\Transaction\ITransactionFactory                 $transactionFactory
-	 * @param \SixtyEightPublishers\User\ForgotPassword\Query\IGetUserByEmailQueryFactory               $getUserByEmailQueryFactory
-	 * @param \SixtyEightPublishers\User\ForgotPassword\Query\ICancelPasswordRequestsByUserQueryFactory $cancelPasswordRequestsByUserQueryFactory
+	 * @param \SixtyEightPublishers\DoctrinePersistence\TransactionFactoryInterface                                   $transactionFactory
+	 * @param \SixtyEightPublishers\DoctrineQueryObjects\ExecutableQueryObjectFactoryInterface                        $executableQueryObjectFactory
+	 * @param \SixtyEightPublishers\User\ForgotPassword\Query\GetUserByEmailQueryObjectFactoryInterface               $getUserByEmailQueryFactory
+	 * @param \SixtyEightPublishers\User\ForgotPassword\Query\CancelPasswordRequestsByUserQueryObjectFactoryInterface $cancelPasswordRequestsByUserQueryFactory
 	 */
-	public function __construct(
-		Doctrine\ORM\EntityManagerInterface $em,
-		SixtyEightPublishers\DoctrinePersistence\Transaction\ITransactionFactory $transactionFactory,
-		SixtyEightPublishers\User\ForgotPassword\Query\IGetUserByEmailQueryFactory $getUserByEmailQueryFactory,
-		SixtyEightPublishers\User\ForgotPassword\Query\ICancelPasswordRequestsByUserQueryFactory $cancelPasswordRequestsByUserQueryFactory
-	) {
-		$this->em = $em;
+	public function __construct(TransactionFactoryInterface $transactionFactory, ExecutableQueryObjectFactoryInterface $executableQueryObjectFactory, GetUserByEmailQueryObjectFactoryInterface $getUserByEmailQueryFactory, CancelPasswordRequestsByUserQueryObjectFactoryInterface $cancelPasswordRequestsByUserQueryFactory)
+	{
 		$this->transactionFactory = $transactionFactory;
+		$this->executableQueryObjectFactory = $executableQueryObjectFactory;
 		$this->getUserByEmailQueryFactory = $getUserByEmailQueryFactory;
 		$this->cancelPasswordRequestsByUserQueryFactory = $cancelPasswordRequestsByUserQueryFactory;
 	}
 
 	/**
-	 * @param \SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IUser $user
+	 * {@inheritdoc}
 	 *
-	 * @return \SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest
+	 * @throws \Throwable
 	 */
-	protected function createPasswordRequestEntity(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IUser $user): SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest
+	public function create(string $email): PasswordRequestInterface
 	{
-		return new SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\PasswordRequest($user);
-	}
+		$transaction = $this->transactionFactory->create(function (string $email) {
+			$user = $this->executableQueryObjectFactory
+				->create($this->getUserByEmailQueryFactory->create($email))
+				->fetchOne();
 
-	/**
-	 * @param \SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IUser $user
-	 *
-	 * @return \SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest
-	 */
-	private function getRequest(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IUser $user): SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest
-	{
-		$transaction = $this->transactionFactory->create(function (Doctrine\ORM\EntityManagerInterface $em, SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IUser $user) {
-			$request = $this->createPasswordRequestEntity($user);
+			if (NULL === $user) {
+				throw PasswordRequestCreationException::notRegisteredEmail($email);
+			}
 
-			$this->cancelPasswordRequestsByUserQueryFactory->create($em, $user)->execute();
+			return $user;
+		});
+
+		$transaction->then(function (EntityManagerInterface $em, UserInterface $result) {
+			$request = $this->createPasswordRequestEntity($result);
+
+			$this->executableQueryObjectFactory->create(
+				$this->cancelPasswordRequestsByUserQueryFactory->create($result),
+				(new ResultSetOptions())->setHydrationMode(AbstractQuery::HYDRATE_SCALAR)
+			)->fetch();
 
 			$request->getRequestDeviceInfo()->fill();
 			$em->persist($request);
@@ -70,31 +81,25 @@ class PasswordRequestFactory implements IPasswordRequestFactory
 			return $request;
 		});
 
-		return $transaction->run($user);
+		$transaction->error(static function (ErrorContextInterface $context) {
+			$e = $context->getError();
+
+			if (!$e instanceof PasswordRequestCreationException) {
+				throw new PasswordRequestCreationException($e->getMessage(), $e->getCode(), $e);
+			}
+		});
+
+		return $transaction->withArguments(['email' => $email])->run();
 	}
 
-	/*********** interface \SixtyEightPublishers\User\ForgotPassword\IPasswordRequestFactory ***********/
-
 	/**
-	 * {@inheritdoc}
+	 * @param \SixtyEightPublishers\User\ForgotPassword\Entity\UserInterface $user
+	 *
+	 * @return \SixtyEightPublishers\User\ForgotPassword\Entity\PasswordRequestInterface
+	 * @throws \Exception
 	 */
-	public function create(string $email): SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest
+	protected function createPasswordRequestEntity(UserInterface $user): PasswordRequestInterface
 	{
-		try {
-			/** @var NULL|\SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IUser $user */
-			$user = $this->getUserByEmailQueryFactory->create($this->em, $email)->getOneOrNullResult();
-
-			if (NULL === $user) {
-				throw SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestCreationException::notRegisteredEmail($email);
-			}
-
-			return $this->getRequest($user);
-		} catch (\Throwable $e) {
-			if (!$e instanceof SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestCreationException) {
-				$e = new SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestCreationException($e->getMessage(), $e->getCode(), $e);
-			}
-
-			throw $e;
-		}
+		return new PasswordRequest($user);
 	}
 }

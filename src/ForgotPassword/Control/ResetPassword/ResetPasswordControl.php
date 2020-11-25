@@ -4,28 +4,36 @@ declare(strict_types=1);
 
 namespace SixtyEightPublishers\User\ForgotPassword\Control\ResetPassword;
 
-use Nette;
-use SixtyEightPublishers;
+use Throwable;
+use Nette\Application\UI\Form;
+use SixtyEightPublishers\SmartNetteComponent\UI\Control;
+use SixtyEightPublishers\User\Common\Logger\LoggerInterface;
+use SixtyEightPublishers\TranslationBridge\TranslatorAwareTrait;
+use SixtyEightPublishers\TranslationBridge\TranslatorAwareInterface;
+use SixtyEightPublishers\User\ForgotPassword\Entity\PasswordRequestInterface;
+use SixtyEightPublishers\User\ForgotPassword\Mail\PasswordHasBeenResetEmailInterface;
+use SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestProcessException;
+use SixtyEightPublishers\User\ForgotPassword\PasswordRequest\PasswordRequestManagerInterface;
 
 /**
- * @method void onSuccess(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $request, string $rawPassword)
- * @method void onError(SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $request, SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestProcessException $e)
- * @method void onFormCreation(Nette\Application\UI\Form $form)
+ * @method void onSuccess(PasswordRequestInterface $request, string $rawPassword)
+ * @method void onError(PasswordRequestInterface $request, PasswordRequestProcessException $e)
+ * @method void onFormCreation(Form $form)
  */
-class ResetPasswordControl extends SixtyEightPublishers\SmartNetteComponent\UI\Control implements SixtyEightPublishers\User\Common\Translator\ITranslatorAware
+class ResetPasswordControl extends Control implements TranslatorAwareInterface
 {
-	use SixtyEightPublishers\User\Common\Translator\TPrefixedTranslatorAware;
+	use TranslatorAwareTrait;
 
-	/** @var \SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest  */
+	/** @var \SixtyEightPublishers\User\ForgotPassword\Entity\PasswordRequestInterface  */
 	private $passwordRequest;
 
-	/** @var \SixtyEightPublishers\User\Common\Logger\ILogger  */
+	/** @var \SixtyEightPublishers\User\Common\Logger\LoggerInterface  */
 	private $logger;
 
-	/** @var \SixtyEightPublishers\User\ForgotPassword\Mail\IPasswordHasBeenResetEmail  */
+	/** @var \SixtyEightPublishers\User\ForgotPassword\Mail\PasswordHasBeenResetEmailInterface  */
 	private $passwordHasBeenResetEmail;
 
-	/** @var \SixtyEightPublishers\User\ForgotPassword\PasswordRequest\IPasswordRequestManager  */
+	/** @var \SixtyEightPublishers\User\ForgotPassword\PasswordRequest\PasswordRequestManagerInterface  */
 	private $passwordRequestManager;
 
 	/** @var callable[] */
@@ -38,19 +46,13 @@ class ResetPasswordControl extends SixtyEightPublishers\SmartNetteComponent\UI\C
 	public $onFormCreation = [];
 
 	/**
-	 * @param \SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest         $passwordRequest
-	 * @param \SixtyEightPublishers\User\Common\Logger\ILogger                                  $logger
-	 * @param \SixtyEightPublishers\User\ForgotPassword\Mail\IPasswordHasBeenResetEmail         $passwordHasBeenResetEmail
-	 * @param \SixtyEightPublishers\User\ForgotPassword\PasswordRequest\IPasswordRequestManager $passwordRequestManager
+	 * @param \SixtyEightPublishers\User\ForgotPassword\Entity\PasswordRequestInterface                 $passwordRequest
+	 * @param \SixtyEightPublishers\User\Common\Logger\LoggerInterface                                  $logger
+	 * @param \SixtyEightPublishers\User\ForgotPassword\Mail\PasswordHasBeenResetEmailInterface         $passwordHasBeenResetEmail
+	 * @param \SixtyEightPublishers\User\ForgotPassword\PasswordRequest\PasswordRequestManagerInterface $passwordRequestManager
 	 */
-	public function __construct(
-		SixtyEightPublishers\User\ForgotPassword\DoctrineEntity\IPasswordRequest $passwordRequest,
-		SixtyEightPublishers\User\Common\Logger\ILogger $logger,
-		SixtyEightPublishers\User\ForgotPassword\Mail\IPasswordHasBeenResetEmail $passwordHasBeenResetEmail,
-		SixtyEightPublishers\User\ForgotPassword\PasswordRequest\IPasswordRequestManager $passwordRequestManager
-	) {
-		parent::__construct();
-
+	public function __construct(PasswordRequestInterface $passwordRequest, LoggerInterface $logger, PasswordHasBeenResetEmailInterface $passwordHasBeenResetEmail, PasswordRequestManagerInterface $passwordRequestManager)
+	{
 		$this->passwordRequest = $passwordRequest;
 		$this->logger = $logger;
 		$this->passwordHasBeenResetEmail = $passwordHasBeenResetEmail;
@@ -58,17 +60,26 @@ class ResetPasswordControl extends SixtyEightPublishers\SmartNetteComponent\UI\C
 	}
 
 	/**
+	 * @return void
+	 */
+	public function render(): void
+	{
+		$this->template->setTranslator($this->getPrefixedTranslator());
+		$this->doRender();
+	}
+
+	/**
 	 * @return \Nette\Application\UI\Form
 	 */
-	protected function createComponentForm(): Nette\Application\UI\Form
+	protected function createComponentForm(): Form
 	{
-		$form = new Nette\Application\UI\Form();
+		$form = new Form();
 
 		$form->setTranslator($this->getPrefixedTranslator());
 
 		$form->addPassword('password', 'password.field')
 			->setRequired('password.required')
-			->setAttribute('autocomplete', 'new-password');
+			->setHtmlAttribute('autocomplete', 'new-password');
 
 		$form->addProtection('protection.rule');
 
@@ -82,22 +93,13 @@ class ResetPasswordControl extends SixtyEightPublishers\SmartNetteComponent\UI\C
 	}
 
 	/**
-	 * @return void
-	 */
-	public function render(): void
-	{
-		$this->template->setTranslator($this->getPrefixedTranslator());
-		$this->doRender();
-	}
-
-	/**
 	 * @internal
 	 *
 	 * @param \Nette\Application\UI\Form $form
 	 *
 	 * @return void
 	 */
-	public function processForm(Nette\Application\UI\Form $form): void
+	public function processForm(Form $form): void
 	{
 		try {
 			$password = $form->values->password;
@@ -111,12 +113,12 @@ class ResetPasswordControl extends SixtyEightPublishers\SmartNetteComponent\UI\C
 					get_class($this->passwordHasBeenResetEmail),
 					$this->passwordRequest->getUser()->getEmail()
 				));
-			} catch (\Throwable $e) {
+			} catch (Throwable $e) {
 				$this->logger->error((string) $e);
 			}
 
 			$this->onSuccess($this->passwordRequest, $password);
-		} catch (SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestProcessException $e) {
+		} catch (PasswordRequestProcessException $e) {
 			$this->onError($this->passwordRequest, $e);
 		}
 	}
