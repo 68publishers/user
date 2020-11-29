@@ -13,7 +13,7 @@ final class UserMapping implements ArrayAccess
 	public const FIELD_ID = 'id';
 	public const FILED_EMAIL = 'email';
 	public const FIELD_PASSWORD = 'password';
-	public const FIELD_LOGIN = 'login';
+	public const FIELD_USERNAME = 'username';
 
 	/** @var string  */
 	private $className;
@@ -23,7 +23,7 @@ final class UserMapping implements ArrayAccess
 		self::FIELD_ID => 'id',
 		self::FILED_EMAIL => 'email',
 		self::FIELD_PASSWORD => 'password',
-		self::FIELD_LOGIN => 'login',
+		self::FIELD_USERNAME => 'username',
 	];
 
 	/**

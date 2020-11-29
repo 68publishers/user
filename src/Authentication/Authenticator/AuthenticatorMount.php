@@ -37,12 +37,12 @@ final class AuthenticatorMount implements IAuthenticator
 	{
 		if (!isset($credentials[self::USERNAME])) {
 			throw new AuthenticationException(sprintf(
-				'Missing login field in credentials (key %s)',
+				'Missing username field in credentials (key %s)',
 				self::USERNAME
 			), self::FAILURE);
 		}
 
-		[ $prefix, $login ] = $this->getPrefixAndLogin($credentials[self::USERNAME]);
+		[ $prefix, $username ] = $this->getPrefixAndUsername($credentials[self::USERNAME]);
 
 		try {
 			$authenticator = $this->getAuthenticator($prefix);
@@ -50,7 +50,7 @@ final class AuthenticatorMount implements IAuthenticator
 			throw new AuthenticationException($e->getMessage(), self::FAILURE, $e);
 		}
 
-		$credentials[self::USERNAME] = $login;
+		$credentials[self::USERNAME] = $username;
 
 		return $authenticator->authenticate($credentials);
 	}
@@ -85,16 +85,16 @@ final class AuthenticatorMount implements IAuthenticator
 	}
 
 	/**
-	 * @param string $login
+	 * @param string $username
 	 *
 	 * @return array
 	 */
-	private function getPrefixAndLogin(string $login): array
+	private function getPrefixAndUsername(string $username): array
 	{
-		if (Strings::contains($login, self::SEPARATOR)) {
-			return explode(self::SEPARATOR, $login, 2);
+		if (Strings::contains($username, self::SEPARATOR)) {
+			return explode(self::SEPARATOR, $username, 2);
 		}
 
-		return [ '', $login ];
+		return [ '', $username ];
 	}
 }

@@ -13,18 +13,18 @@ use SixtyEightPublishers\DoctrineQueryObjects\QueryFactory\QueryFactoryInterface
 final class AuthenticatorQueryObject extends AbstractQueryObject
 {
 	/** @var string  */
-	private $login;
+	private $username;
 
 	/** @var \SixtyEightPublishers\User\Common\UserMapping  */
 	private $userMapping;
 
 	/**
-	 * @param string                                        $login
+	 * @param string                                        $username
 	 * @param \SixtyEightPublishers\User\Common\UserMapping $userMapping
 	 */
-	public function __construct(string $login, UserMapping $userMapping)
+	public function __construct(string $username, UserMapping $userMapping)
 	{
-		$this->login = $login;
+		$this->username = $username;
 		$this->userMapping = $userMapping;
 	}
 
@@ -36,14 +36,14 @@ final class AuthenticatorQueryObject extends AbstractQueryObject
 		$builder = $queryFactory->createQueryBuilder();
 
 		$condition = $builder->expr()->eq(
-			'u.' . $this->userMapping[$this->userMapping::FIELD_LOGIN],
-			':login'
+			'u.' . $this->userMapping[$this->userMapping::FIELD_USERNAME],
+			':username'
 		);
 
 		return $builder
 			->select('u')
 			->from(UserInterface::class, 'u')
 			->where($condition)
-			->setParameter('login', $this->login);
+			->setParameter('username', $this->username);
 	}
 }

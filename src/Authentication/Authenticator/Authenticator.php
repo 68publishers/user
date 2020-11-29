@@ -12,7 +12,6 @@ use Nette\Security\AuthenticationException;
 use Doctrine\DBAL\Exception as DBALException;
 use SixtyEightPublishers\User\Authentication\Entity\UserInterface;
 use SixtyEightPublishers\DoctrineQueryObjects\ExecutableQueryObjectFactoryInterface;
-use SixtyEightPublishers\User\Common\PasswordHashStrategy\PasswordHashStrategyInterface;
 use SixtyEightPublishers\User\Authentication\Query\AuthenticatorQueryObjectFactoryInterface;
 
 final class Authenticator implements IAuthenticator
@@ -25,19 +24,14 @@ final class Authenticator implements IAuthenticator
 	/** @var \SixtyEightPublishers\User\Authentication\Query\AuthenticatorQueryObjectFactoryInterface  */
 	private $authenticatorQueryFactory;
 
-	/** @var \SixtyEightPublishers\User\Common\PasswordHashStrategy\PasswordHashStrategyInterface  */
-	private $passwordHashStrategy;
-
 	/**
 	 * @param \SixtyEightPublishers\DoctrineQueryObjects\ExecutableQueryObjectFactoryInterface         $executableQueryObjectFactory
 	 * @param \SixtyEightPublishers\User\Authentication\Query\AuthenticatorQueryObjectFactoryInterface $authenticatorQueryFactory
-	 * @param \SixtyEightPublishers\User\Common\PasswordHashStrategy\PasswordHashStrategyInterface     $passwordHashStrategy
 	 */
-	public function __construct(ExecutableQueryObjectFactoryInterface $executableQueryObjectFactory, AuthenticatorQueryObjectFactoryInterface $authenticatorQueryFactory, PasswordHashStrategyInterface $passwordHashStrategy)
+	public function __construct(ExecutableQueryObjectFactoryInterface $executableQueryObjectFactory, AuthenticatorQueryObjectFactoryInterface $authenticatorQueryFactory)
 	{
 		$this->executableQueryObjectFactory = $executableQueryObjectFactory;
 		$this->authenticatorQueryFactory = $authenticatorQueryFactory;
-		$this->passwordHashStrategy = $passwordHashStrategy;
 	}
 
 	/**
@@ -45,13 +39,13 @@ final class Authenticator implements IAuthenticator
 	 */
 	public function authenticate(array $credentials): IIdentity
 	{
-		[ $login, $password ] = $this->validateCredentials($credentials);
-		$user = $this->findUser($login);
+		[ $username, $password ] = $this->validateCredentials($credentials);
+		$user = $this->findUser($username);
 
-		if (FALSE === $this->passwordHashStrategy->verify($password, $user->getPassword())) {
+		if (!$user->getPassword()->verify($password)) {
 			throw new AuthenticationException(sprintf(
 				'Invalid password for user "%s"',
-				$login
+				$username
 			), self::INVALID_CREDENTIAL);
 		}
 
@@ -68,7 +62,7 @@ final class Authenticator implements IAuthenticator
 	{
 		if (!isset($credentials[self::USERNAME])) {
 			throw new AuthenticationException(sprintf(
-				'Missing login field in credentials (key %s)',
+				'Missing username field in credentials (key %s)',
 				self::USERNAME
 			), self::FAILURE);
 		}
@@ -87,24 +81,24 @@ final class Authenticator implements IAuthenticator
 	}
 
 	/**
-	 * @param string $login
+	 * @param string $username
 	 *
 	 * @return \SixtyEightPublishers\User\Authentication\Entity\UserInterface
 	 * @throws \Nette\Security\AuthenticationException
 	 */
-	private function findUser(string $login): UserInterface
+	private function findUser(string $username): UserInterface
 	{
 		try {
-			$user = $this->executableQueryObjectFactory->create($this->authenticatorQueryFactory->create($login))->fetchOne();
+			$user = $this->executableQueryObjectFactory->create($this->authenticatorQueryFactory->create($username))->fetchOne();
 		} catch (NonUniqueResultException $e) {
 			$e = new AuthenticationException(sprintf(
-				'User\'s login field is not unique! Value was "%s"',
-				$login
+				'User\'s username field is not unique! Value was "%s"',
+				$username
 			), self::FAILURE, $e);
 		} catch (DBALException $e) {
 			$e = new AuthenticationException(sprintf(
-				'DBAL throws unexpected exception, login values was "%s"',
-				$login
+				'DBAL throws unexpected exception, username value was "%s"',
+				$username
 			), self::FAILURE, $e);
 		}
 
@@ -115,7 +109,7 @@ final class Authenticator implements IAuthenticator
 		if (!isset($user)) {
 			throw new AuthenticationException(sprintf(
 				'User "%s" not found.',
-				$login
+				$username
 			), self::IDENTITY_NOT_FOUND);
 		}
 

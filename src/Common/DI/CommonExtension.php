@@ -10,6 +10,7 @@ use Nette\Schema\Schema;
 use Nette\DI\CompilerExtension;
 use Nette\DI\Definitions\Statement;
 use SixtyEightPublishers\User\Common\UserMapping;
+use SixtyEightPublishers\DoctrineBridge\DI\DatabaseType;
 use SixtyEightPublishers\DoctrineBridge\DI\TargetEntity;
 use SixtyEightPublishers\User\Common\Logger\TracyLogger;
 use SixtyEightPublishers\User\Common\Mail\NullMailSender;
@@ -17,12 +18,15 @@ use SixtyEightPublishers\User\Common\Entity\UserInterface;
 use SixtyEightPublishers\User\Common\Logger\LoggerInterface;
 use SixtyEightPublishers\User\Common\Mail\MailSenderInterface;
 use SixtyEightPublishers\User\DI\AbstractCompilerExtensionPass;
+use SixtyEightPublishers\User\Common\DbalType\Password\PasswordType;
 use SixtyEightPublishers\User\Common\Exception\ConfigurationException;
+use SixtyEightPublishers\DoctrineBridge\DI\DatabaseTypeProviderInterface;
 use SixtyEightPublishers\DoctrineBridge\DI\TargetEntityProviderInterface;
+use SixtyEightPublishers\User\Common\DbalType\Password\PasswordInterface;
 use SixtyEightPublishers\User\Common\PasswordHashStrategy\DefaultPasswordHashStrategy;
 use SixtyEightPublishers\User\Common\PasswordHashStrategy\PasswordHashStrategyInterface;
 
-final class CommonExtension extends AbstractCompilerExtensionPass implements TargetEntityProviderInterface
+final class CommonExtension extends AbstractCompilerExtensionPass implements TargetEntityProviderInterface, DatabaseTypeProviderInterface
 {
 	public const SHARED_DATA_USER_CLASS_NAME = 'common.user_class_name';
 
@@ -112,6 +116,16 @@ final class CommonExtension extends AbstractCompilerExtensionPass implements Tar
 	{
 		return [
 			new TargetEntity(UserInterface::class, $this->sharedData[self::SHARED_DATA_USER_CLASS_NAME]),
+		];
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getDatabaseTypes(): array
+	{
+		return [
+			new DatabaseType(PasswordInterface::class, PasswordType::class),
 		];
 	}
 }
