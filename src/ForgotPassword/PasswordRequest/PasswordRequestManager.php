@@ -6,6 +6,7 @@ namespace SixtyEightPublishers\User\ForgotPassword\PasswordRequest;
 
 use Nette\SmartObject;
 use Doctrine\ORM\EntityManagerInterface;
+use SixtyEightPublishers\User\Common\DbalType\Password\Password;
 use SixtyEightPublishers\DoctrinePersistence\TransactionFactoryInterface;
 use SixtyEightPublishers\DoctrinePersistence\Context\ErrorContextInterface;
 use SixtyEightPublishers\User\ForgotPassword\Entity\PasswordRequestInterface;
@@ -78,7 +79,7 @@ class PasswordRequestManager implements PasswordRequestManagerInterface
 
 			$passwordRequest->getResetDeviceInfo()->fill();
 			$passwordRequest->setStatus($passwordRequest::STATUS_COMPLETED);
-			$user->setPassword($password);
+			$user->setPassword(new Password($password));
 
 			$em->persist($passwordRequest);
 			$em->persist($user);

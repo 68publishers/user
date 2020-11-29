@@ -81,6 +81,7 @@ trait LogoutPresenterTrait
 	 * Do redirect in this method, you can also add flash messages etc.
 	 *
 	 * @return void
+	 * @throws \Nette\Application\AbortException
 	 */
 	abstract protected function triggerLoggedOut(): void;
 

@@ -9,9 +9,9 @@ use SixtyEightPublishers\DoctrineQueryObjects\QueryObjectInterface;
 interface AuthenticatorQueryObjectFactoryInterface
 {
 	/**
-	 * @param string $login
+	 * @param string $username
 	 *
 	 * @return \SixtyEightPublishers\DoctrineQueryObjects\QueryObjectInterface
 	 */
-	public function create(string $login): QueryObjectInterface;
+	public function create(string $username): QueryObjectInterface;
 }
