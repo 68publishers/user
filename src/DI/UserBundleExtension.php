@@ -13,12 +13,13 @@ use SixtyEightPublishers\User\Common\DI\CommonExtension;
 use SixtyEightPublishers\User\Authentication\DI\AuthenticationExtension;
 use SixtyEightPublishers\User\Common\Exception\StopPropagationException;
 use SixtyEightPublishers\User\ForgotPassword\DI\ForgotPasswordExtension;
+use SixtyEightPublishers\DoctrineBridge\DI\DatabaseTypeProviderInterface;
 use SixtyEightPublishers\DoctrineBridge\DI\TargetEntityProviderInterface;
 use SixtyEightPublishers\DoctrineBridge\DI\EntityMappingProviderInterface;
 use SixtyEightPublishers\TranslationBridge\DI\TranslationProviderInterface;
 use SixtyEightPublishers\User\DoctrineIdentity\DI\DoctrineIdentityExtension;
 
-final class UserBundleExtension extends CompilerExtension implements EntityMappingProviderInterface, TargetEntityProviderInterface, TranslationProviderInterface
+final class UserBundleExtension extends CompilerExtension implements DatabaseTypeProviderInterface, EntityMappingProviderInterface, TargetEntityProviderInterface, TranslationProviderInterface
 {
 	/** @var \Nette\DI\CompilerExtension[] */
 	private $extensions;
@@ -94,6 +95,18 @@ final class UserBundleExtension extends CompilerExtension implements EntityMappi
 		foreach ($this->extensions as $extension) {
 			$extension->afterCompile($class);
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getDatabaseTypes(): array
+	{
+		return array_merge([], ...array_map(static function (DatabaseTypeProviderInterface $provider) {
+			return $provider->getDatabaseTypes();
+		}, array_filter(array_values($this->extensions), static function ($extension) {
+			return $extension instanceof DatabaseTypeProviderInterface;
+		})));
 	}
 
 	/**
