@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SixtyEightPublishers\User\ForgotPassword\Control\ResetPassword;
 
 use Throwable;
+use Nette\Security\User;
 use Nette\Application\UI\Form;
 use SixtyEightPublishers\SmartNetteComponent\UI\Control;
 use SixtyEightPublishers\User\Common\Logger\LoggerInterface;
@@ -16,7 +17,7 @@ use SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestProcessExc
 use SixtyEightPublishers\User\ForgotPassword\PasswordRequest\PasswordRequestManagerInterface;
 
 /**
- * @method void onSuccess(PasswordRequestInterface $request, string $rawPassword)
+ * @method void onSuccess(PasswordRequestInterface $request)
  * @method void onError(PasswordRequestInterface $request, PasswordRequestProcessException $e)
  * @method void onFormCreation(Form $form)
  */
@@ -36,6 +37,12 @@ class ResetPasswordControl extends Control implements TranslatorAwareInterface
 	/** @var \SixtyEightPublishers\User\ForgotPassword\PasswordRequest\PasswordRequestManagerInterface  */
 	private $passwordRequestManager;
 
+	/** @var \Nette\Security\User  */
+	private $user;
+
+	/** @var bool  */
+	private $autoLogin = FALSE;
+
 	/** @var callable[] */
 	public $onSuccess = [];
 
@@ -50,13 +57,30 @@ class ResetPasswordControl extends Control implements TranslatorAwareInterface
 	 * @param \SixtyEightPublishers\User\Common\Logger\LoggerInterface                                  $logger
 	 * @param \SixtyEightPublishers\User\ForgotPassword\Mail\PasswordHasBeenResetEmailInterface         $passwordHasBeenResetEmail
 	 * @param \SixtyEightPublishers\User\ForgotPassword\PasswordRequest\PasswordRequestManagerInterface $passwordRequestManager
+	 * @param \Nette\Security\User                                                                      $user
 	 */
-	public function __construct(PasswordRequestInterface $passwordRequest, LoggerInterface $logger, PasswordHasBeenResetEmailInterface $passwordHasBeenResetEmail, PasswordRequestManagerInterface $passwordRequestManager)
-	{
+	public function __construct(
+		PasswordRequestInterface $passwordRequest,
+		LoggerInterface $logger,
+		PasswordHasBeenResetEmailInterface $passwordHasBeenResetEmail,
+		PasswordRequestManagerInterface $passwordRequestManager,
+		User $user
+	) {
 		$this->passwordRequest = $passwordRequest;
 		$this->logger = $logger;
 		$this->passwordHasBeenResetEmail = $passwordHasBeenResetEmail;
 		$this->passwordRequestManager = $passwordRequestManager;
+		$this->user = $user;
+	}
+
+	/**
+	 * @param bool $autoLogin
+	 *
+	 * @return void
+	 */
+	public function setAutoLogin(bool $autoLogin): void
+	{
+		$this->autoLogin = $autoLogin;
 	}
 
 	/**
@@ -98,26 +122,32 @@ class ResetPasswordControl extends Control implements TranslatorAwareInterface
 	 * @param \Nette\Application\UI\Form $form
 	 *
 	 * @return void
+	 * @throws \Nette\Security\AuthenticationException
 	 */
 	public function processForm(Form $form): void
 	{
 		try {
+			$request = $this->passwordRequest;
 			$password = $form->values->password;
 
-			$this->passwordRequestManager->reset($this->passwordRequest, $password);
+			$this->passwordRequestManager->reset($request, $password);
 
 			try {
-				$this->passwordHasBeenResetEmail->send($this->passwordRequest->getUser());
+				$this->passwordHasBeenResetEmail->send($request->getUser());
 				$this->logger->info(sprintf(
 					'Mail %s was successfully sent to %s',
 					get_class($this->passwordHasBeenResetEmail),
-					$this->passwordRequest->getUser()->getEmail()
+					$request->getUser()->getEmail()
 				));
 			} catch (Throwable $e) {
 				$this->logger->error((string) $e);
 			}
 
-			$this->onSuccess($this->passwordRequest, $password);
+			if ($this->autoLogin) {
+				$this->user->login($request->getUser()->getUsername(), $password);
+			}
+
+			$this->onSuccess($this->passwordRequest);
 		} catch (PasswordRequestProcessException $e) {
 			$this->onError($this->passwordRequest, $e);
 		}
