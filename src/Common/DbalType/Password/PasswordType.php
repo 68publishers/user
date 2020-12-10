@@ -18,11 +18,10 @@ final class PasswordType extends StringType implements ContainerAwareTypeInterfa
 
 	/**
 	 * @internal
-	 * @param \Nette\DI\Container $container
 	 *
-	 * @return void
+	 * {@inheritDoc}
 	 */
-	public function setContainer(Container $container): void
+	public function setContainer(Container $container, array $context = []): void
 	{
 		self::setPasswordHashStrategy($container->getByType(PasswordHashStrategyInterface::class));
 	}

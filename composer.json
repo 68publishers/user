@@ -15,7 +15,7 @@
 	],
 	"require": {
 		"php": "^7.3",
-		"68publishers/doctrine-bridge": "^0.1",
+		"68publishers/doctrine-bridge": "^0.1.1",
 		"68publishers/doctrine-persistence": "^0.2",
 		"68publishers/doctrine-query-objects": "^0.1",
 		"68publishers/smart-nette-component": "^0.2",
