@@ -9,10 +9,12 @@ use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use SixtyEightPublishers\User\ForgotPassword\Entity\UserInterface;
 use SixtyEightPublishers\User\ForgotPassword\Entity\PasswordRequest;
+use SixtyEightPublishers\DoctrinePersistence\Badge\NonLoggableErrorBadge;
 use SixtyEightPublishers\DoctrinePersistence\TransactionFactoryInterface;
 use SixtyEightPublishers\DoctrineQueryObjects\ResultSet\ResultSetOptions;
 use SixtyEightPublishers\DoctrinePersistence\Context\ErrorContextInterface;
 use SixtyEightPublishers\User\ForgotPassword\Entity\PasswordRequestInterface;
+use SixtyEightPublishers\DoctrinePersistence\Context\TransactionContextInterface;
 use SixtyEightPublishers\DoctrineQueryObjects\ExecutableQueryObjectFactoryInterface;
 use SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestCreationException;
 use SixtyEightPublishers\User\ForgotPassword\Query\GetUserByEmailQueryObjectFactoryInterface;
@@ -55,13 +57,17 @@ class PasswordRequestFactory implements PasswordRequestFactoryInterface
 	 */
 	public function create(string $email): PasswordRequestInterface
 	{
-		$transaction = $this->transactionFactory->create(function (string $email) {
+		$transaction = $this->transactionFactory->create(function (TransactionContextInterface $context, string $email) {
 			$user = $this->executableQueryObjectFactory
 				->create($this->getUserByEmailQueryFactory->create($email))
 				->fetchOne();
 
 			if (NULL === $user) {
-				throw PasswordRequestCreationException::notRegisteredEmail($email);
+				$e = PasswordRequestCreationException::notRegisteredEmail($email);
+
+				$context->addBadges(new NonLoggableErrorBadge($e));
+
+				throw $e;
 			}
 
 			return $user;
