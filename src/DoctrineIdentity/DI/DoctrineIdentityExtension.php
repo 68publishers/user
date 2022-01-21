@@ -76,9 +76,7 @@ final class DoctrineIdentityExtension extends AbstractCompilerExtensionPass
 		]);
 
 		if (NULL !== $this->config->namespace) {
-			$userStorageProxy->addSetup('$service->setNamespace(?)', [
-				'namespace' => $this->config->namespace,
-			]);
+			$userStorageProxy->addSetup('$service->setNamespace(?)', [$this->config->namespace]);
 		}
 	}
 }
