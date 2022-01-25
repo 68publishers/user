@@ -28,18 +28,23 @@ class PasswordRequestSender implements PasswordRequestSenderInterface
 	/** @var \SixtyEightPublishers\User\Common\Logger\LoggerInterface  */
 	protected $logger;
 
+	/** @var bool */
+	protected $sendEmailForNotRegisteredUsers;
+
 	/**
 	 * @param \SixtyEightPublishers\User\ForgotPassword\PasswordRequest\PasswordRequestFactoryInterface $passwordRequestFactory
 	 * @param \SixtyEightPublishers\User\Common\Logger\LoggerInterface                                  $logger
 	 * @param \SixtyEightPublishers\User\ForgotPassword\Mail\ForgotPasswordResetEmailInterface          $forgotPasswordResetEmail
 	 * @param \SixtyEightPublishers\User\ForgotPassword\Mail\ForgotPasswordNotRegisteredEmailInterface  $forgotPasswordNotRegisteredEmail
+	 * @param bool                                                                                      $sendEmailForNotRegisteredUsers
 	 */
-	public function __construct(PasswordRequestFactoryInterface $passwordRequestFactory, LoggerInterface $logger, ForgotPasswordResetEmailInterface $forgotPasswordResetEmail, ForgotPasswordNotRegisteredEmailInterface $forgotPasswordNotRegisteredEmail)
+	public function __construct(PasswordRequestFactoryInterface $passwordRequestFactory, LoggerInterface $logger, ForgotPasswordResetEmailInterface $forgotPasswordResetEmail, ForgotPasswordNotRegisteredEmailInterface $forgotPasswordNotRegisteredEmail, bool $sendEmailForNotRegisteredUsers = TRUE)
 	{
 		$this->passwordRequestFactory = $passwordRequestFactory;
 		$this->logger = $logger;
 		$this->forgotPasswordResetEmail = $forgotPasswordResetEmail;
 		$this->forgotPasswordNotRegisteredEmail = $forgotPasswordNotRegisteredEmail;
+		$this->sendEmailForNotRegisteredUsers = $sendEmailForNotRegisteredUsers;
 	}
 
 	/**
@@ -57,6 +62,10 @@ class PasswordRequestSender implements PasswordRequestSenderInterface
 			if (!$e->isNotRegisteredEmail()) {
 				$this->logError($e);
 
+				throw $e;
+			}
+
+			if (!$this->sendEmailForNotRegisteredUsers) {
 				throw $e;
 			}
 

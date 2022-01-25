@@ -72,6 +72,7 @@ final class ForgotPasswordExtension extends AbstractCompilerExtensionPass implem
 			'enabled' => Expect::bool(FALSE),
 			'register_controls' => Expect::bool(FALSE),
 			'request_expiration' => Expect::anyOf(Expect::string(), Expect::int())->default(PasswordRequest::DEFAULT_EXPIRATION),
+			'send_email_for_not_registered_users' => Expect::bool(TRUE),
 		]);
 	}
 
@@ -92,7 +93,9 @@ final class ForgotPasswordExtension extends AbstractCompilerExtensionPass implem
 
 		$builder->addDefinition($this->prefix('password_request_sender'))
 			->setType(PasswordRequestSenderInterface::class)
-			->setFactory(PasswordRequestSender::class);
+			->setFactory(PasswordRequestSender::class, [
+				'sendEmailForNotRegisteredUsers' => $this->config->send_email_for_not_registered_users,
+			]);
 
 		if ($this->config->register_controls) {
 			$builder->addFactoryDefinition($this->prefix('control.forgot_password'))
