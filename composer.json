@@ -14,12 +14,12 @@
 		}
 	],
 	"require": {
-		"php": "^7.3",
-		"68publishers/doctrine-bridge": "^0.1.1",
-		"68publishers/doctrine-persistence": "^0.2.6",
-		"68publishers/doctrine-query-objects": "^0.1",
-		"68publishers/smart-nette-component": "^0.2",
-		"68publishers/translation-bridge": "^1.2",
+		"php": "^8.1",
+		"68publishers/doctrine-bridge": "^1.0",
+		"68publishers/doctrine-persistence": "^0.3",
+		"68publishers/doctrine-query-objects": "^0.2",
+		"68publishers/smart-nette-component": "^1.0",
+		"68publishers/translation-bridge": "^2.0",
 		"matomo/device-detector": "^4.0",
 		"nette/application": "^3.0.6",
 		"nette/di": "^3.0.3",
@@ -28,14 +28,14 @@
 		"nette/security": "^3.0",
 		"nette/utils": "^3.0",
 		"ramsey/uuid": "^4.1",
-		"symfony/event-dispatcher": "^5.1",
+		"symfony/event-dispatcher": "^5.1 || ^6.0",
 		"tracy/tracy": "^2.6"
 	},
 	"require-dev": {
 		"roave/security-advisories": "dev-master",
 		"friendsofphp/php-cs-fixer": "^2.0",
 		"nette/tester": "^2.2",
-		"contributte/mailing": "^0.4",
+		"contributte/mailing": "^0.5",
 		"psr/log": "^1.0"
 	},
 	"suggest": {

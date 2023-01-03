@@ -8,11 +8,12 @@ use Nette\Security\User;
 use Nette\Application\UI\Form;
 use Nette\Security\IAuthenticator;
 use Nette\Security\AuthenticationException;
-use SixtyEightPublishers\SmartNetteComponent\UI\Control;
+use Nette\Application\UI\Control;
 use SixtyEightPublishers\User\Common\Logger\LoggerInterface;
 use SixtyEightPublishers\TranslationBridge\TranslatorAwareTrait;
 use SixtyEightPublishers\TranslationBridge\TranslatorAwareInterface;
 use SixtyEightPublishers\User\Authentication\Authenticator\AuthenticatorMount;
+use SixtyEightPublishers\SmartNetteComponent\Bridge\Nette\Application\TemplateResolverTrait;
 
 /**
  * @method void onLoggedIn()
@@ -22,6 +23,7 @@ use SixtyEightPublishers\User\Authentication\Authenticator\AuthenticatorMount;
 final class SignInControl extends Control implements TranslatorAwareInterface
 {
 	use TranslatorAwareTrait;
+	use TemplateResolverTrait;
 
 	/** @var \Nette\Security\User  */
 	private $user;

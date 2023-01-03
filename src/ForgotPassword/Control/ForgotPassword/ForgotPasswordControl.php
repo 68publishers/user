@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace SixtyEightPublishers\User\ForgotPassword\Control\ForgotPassword;
 
 use Nette\Application\UI\Form;
-use SixtyEightPublishers\SmartNetteComponent\UI\Control;
+use Nette\Application\UI\Control;
 use SixtyEightPublishers\TranslationBridge\TranslatorAwareTrait;
 use SixtyEightPublishers\TranslationBridge\TranslatorAwareInterface;
 use SixtyEightPublishers\User\ForgotPassword\Entity\PasswordRequestInterface;
 use SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestCreationException;
 use SixtyEightPublishers\User\ForgotPassword\PasswordRequest\PasswordRequestSenderInterface;
+use SixtyEightPublishers\SmartNetteComponent\Bridge\Nette\Application\TemplateResolverTrait;
 
 /**
  * @method void onSend(string $email, ?PasswordRequestInterface $passwordRequest)
@@ -20,6 +21,7 @@ use SixtyEightPublishers\User\ForgotPassword\PasswordRequest\PasswordRequestSend
 class ForgotPasswordControl extends Control implements TranslatorAwareInterface
 {
 	use TranslatorAwareTrait;
+	use TemplateResolverTrait;
 
 	/** @var \SixtyEightPublishers\User\ForgotPassword\PasswordRequest\PasswordRequestSenderInterface  */
 	private $passwordRequestSender;

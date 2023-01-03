@@ -10,8 +10,6 @@ use Nette\Schema\Schema;
 use Nette\DI\CompilerExtension;
 use Nette\DI\Definitions\Statement;
 use SixtyEightPublishers\User\Common\UserMapping;
-use SixtyEightPublishers\DoctrineBridge\DI\DatabaseType;
-use SixtyEightPublishers\DoctrineBridge\DI\TargetEntity;
 use SixtyEightPublishers\User\Common\Logger\TracyLogger;
 use SixtyEightPublishers\User\Common\Mail\NullMailSender;
 use SixtyEightPublishers\User\Common\Entity\UserInterface;
@@ -19,11 +17,13 @@ use SixtyEightPublishers\User\Common\Logger\LoggerInterface;
 use SixtyEightPublishers\User\Common\Mail\MailSenderInterface;
 use SixtyEightPublishers\User\DI\AbstractCompilerExtensionPass;
 use SixtyEightPublishers\User\Common\DbalType\Password\PasswordType;
+use SixtyEightPublishers\DoctrineBridge\Bridge\Nette\DI\TargetEntity;
+use SixtyEightPublishers\DoctrineBridge\Bridge\Nette\DI\DatabaseType;
 use SixtyEightPublishers\User\Common\Exception\ConfigurationException;
-use SixtyEightPublishers\DoctrineBridge\DI\DatabaseTypeProviderInterface;
-use SixtyEightPublishers\DoctrineBridge\DI\TargetEntityProviderInterface;
 use SixtyEightPublishers\User\Common\DbalType\Password\PasswordInterface;
 use SixtyEightPublishers\User\Common\PasswordHashStrategy\DefaultPasswordHashStrategy;
+use SixtyEightPublishers\DoctrineBridge\Bridge\Nette\DI\TargetEntityProviderInterface;
+use SixtyEightPublishers\DoctrineBridge\Bridge\Nette\DI\DatabaseTypeProviderInterface;
 use SixtyEightPublishers\User\Common\PasswordHashStrategy\PasswordHashStrategyInterface;
 
 final class CommonExtension extends AbstractCompilerExtensionPass implements TargetEntityProviderInterface, DatabaseTypeProviderInterface

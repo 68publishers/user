@@ -7,13 +7,14 @@ namespace SixtyEightPublishers\User\ForgotPassword\Control\ResetPassword;
 use Throwable;
 use Nette\Security\User;
 use Nette\Application\UI\Form;
-use SixtyEightPublishers\SmartNetteComponent\UI\Control;
+use Nette\Application\UI\Control;
 use SixtyEightPublishers\User\Common\Logger\LoggerInterface;
 use SixtyEightPublishers\TranslationBridge\TranslatorAwareTrait;
 use SixtyEightPublishers\TranslationBridge\TranslatorAwareInterface;
 use SixtyEightPublishers\User\ForgotPassword\Entity\PasswordRequestInterface;
 use SixtyEightPublishers\User\ForgotPassword\Mail\PasswordHasBeenResetEmailInterface;
 use SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestProcessException;
+use SixtyEightPublishers\SmartNetteComponent\Bridge\Nette\Application\TemplateResolverTrait;
 use SixtyEightPublishers\User\ForgotPassword\PasswordRequest\PasswordRequestManagerInterface;
 
 /**
@@ -24,6 +25,7 @@ use SixtyEightPublishers\User\ForgotPassword\PasswordRequest\PasswordRequestMana
 class ResetPasswordControl extends Control implements TranslatorAwareInterface
 {
 	use TranslatorAwareTrait;
+	use TemplateResolverTrait;
 
 	/** @var \SixtyEightPublishers\User\ForgotPassword\Entity\PasswordRequestInterface  */
 	private $passwordRequest;
