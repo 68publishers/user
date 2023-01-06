@@ -6,16 +6,16 @@ namespace SixtyEightPublishers\User\Common\DbalType\Password;
 
 final class Password implements PasswordInterface
 {
-	/** @var string|NULL  */
-	private $value;
+	/** @var string  */
+	private string $value;
 
 	/**
-	 * @param string|NULL $password
+	 * @param string $password
 	 * @param bool        $rehash
 	 */
-	public function __construct(?string $password, bool $rehash = TRUE)
+	public function __construct(string $password, bool $rehash = TRUE)
 	{
-		if (NULL !== $password && $rehash) {
+		if ($rehash) {
 			$passwordHashStrategy = PasswordType::getPasswordHashStrategy();
 			$password = $passwordHashStrategy->needRehash($password) ? $passwordHashStrategy->hash($password) : $password;
 		}
@@ -24,17 +24,9 @@ final class Password implements PasswordInterface
 	}
 
 	/**
-	 * @return \SixtyEightPublishers\User\Common\DbalType\Password\PasswordInterface
-	 */
-	public static function empty(): PasswordInterface
-	{
-		return new static(NULL);
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
-	public function getValue(): ?string
+	public function getValue(): string
 	{
 		return $this->value;
 	}
@@ -44,9 +36,7 @@ final class Password implements PasswordInterface
 	 */
 	public function verify(string $password): bool
 	{
-		$value = $this->getValue();
-
-		return NULL !== $value ? PasswordType::getPasswordHashStrategy()->verify($password, $value) : FALSE;
+		return PasswordType::getPasswordHashStrategy()->verify($password, $this->getValue());
 	}
 
 	/**
@@ -54,6 +44,6 @@ final class Password implements PasswordInterface
 	 */
 	public function __toString(): string
 	{
-		return (string) $this->getValue();
+		return $this->getValue();
 	}
 }

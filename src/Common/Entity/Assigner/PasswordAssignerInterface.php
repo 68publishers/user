@@ -9,9 +9,9 @@ use SixtyEightPublishers\User\Common\DbalType\Password\PasswordInterface;
 interface PasswordAssignerInterface
 {
 	/**
-	 * @param \SixtyEightPublishers\User\Common\DbalType\Password\PasswordInterface $password
+	 * @param \SixtyEightPublishers\User\Common\DbalType\Password\PasswordInterface|null $password
 	 *
 	 * @return void
 	 */
-	public function setPassword(PasswordInterface $password): void;
+	public function setPassword(?PasswordInterface $password): void;
 }

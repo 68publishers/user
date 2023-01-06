@@ -9,7 +9,7 @@ use SixtyEightPublishers\User\Common\DbalType\Password\PasswordInterface;
 interface PasswordAccessorInterface
 {
 	/**
-	 * @return \SixtyEightPublishers\User\Common\DbalType\Password\PasswordInterface
+	 * @return \SixtyEightPublishers\User\Common\DbalType\Password\PasswordInterface|null
 	 */
-	public function getPassword(): PasswordInterface;
+	public function getPassword(): ?PasswordInterface;
 }

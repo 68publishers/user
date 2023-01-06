@@ -7,9 +7,9 @@ namespace SixtyEightPublishers\User\Common\DbalType\Password;
 interface PasswordInterface
 {
 	/**
-	 * @return string|NULL
+	 * @return string
 	 */
-	public function getValue(): ?string;
+	public function getValue(): string;
 
 	/**
 	 * @param string $password

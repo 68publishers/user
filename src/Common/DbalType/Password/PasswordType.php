@@ -47,9 +47,11 @@ final class PasswordType extends StringType implements ContainerAwareTypeInterfa
 	/**
 	 * {@inheritDoc}
 	 */
-	public function convertToPHPValue($value, AbstractPlatform $platform): Password
+	public function convertToPHPValue($value, AbstractPlatform $platform): ?Password
 	{
-		return new Password(parent::convertToPHPValue($value, $platform), FALSE);
+		$value = parent::convertToPHPValue($value, $platform);
+
+		return null !== $value ? new Password($value, FALSE) : null;
 	}
 
 	/**
