@@ -8,6 +8,7 @@ use Nette\Schema\Expect;
 use Nette\Schema\Schema;
 use Nette\Security\IAuthenticator;
 use Nette\DI\Definitions\Statement;
+use Nette\DI\Definitions\Reference;
 use SixtyEightPublishers\User\Common\DI\CommonExtension;
 use SixtyEightPublishers\User\DI\AbstractCompilerExtensionPass;
 use SixtyEightPublishers\User\Authentication\Entity\UserInterface;
@@ -18,6 +19,7 @@ use SixtyEightPublishers\User\Authentication\Authenticator\Authenticator;
 use SixtyEightPublishers\User\Authentication\Control\SignIn\SignInControl;
 use SixtyEightPublishers\User\Authentication\Csrf\CsrfTokenFactoryInterface;
 use SixtyEightPublishers\User\Authentication\Query\AuthenticatorQueryObject;
+use SixtyEightPublishers\User\Authentication\IdentityHandler\IdentityHandler;
 use SixtyEightPublishers\DoctrineBridge\Bridge\Nette\DI\TargetEntityProviderInterface;
 use SixtyEightPublishers\TranslationBridge\Bridge\Nette\DI\TranslationProviderInterface;
 use SixtyEightPublishers\User\Authentication\Control\SignIn\SignInControlFactoryInterface;
@@ -72,9 +74,15 @@ final class AuthenticationExtension extends AbstractCompilerExtensionPass implem
 	{
 		$builder = $this->getContainerBuilder();
 
+		$builder->addDefinition($this->prefix('identity_handler'))
+			->setType(IdentityHandler::class)
+			->setAutowired(false);
+
 		$builder->addDefinition($this->prefix('authenticator'))
 			->setType(IAuthenticator::class)
-			->setFactory($this->config->authenticator);
+			->setFactory($this->config->authenticator, [
+				'identityHandler' => new Reference($this->prefix('identity_handler')),
+			]);
 
 		if (isset($builder->getAliases()['nette.authenticator'])) {
 			$builder->removeAlias('nette.authenticator');

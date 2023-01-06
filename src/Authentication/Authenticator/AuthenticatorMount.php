@@ -4,45 +4,35 @@ declare(strict_types=1);
 
 namespace SixtyEightPublishers\User\Authentication\Authenticator;
 
-use Nette\SmartObject;
 use Nette\Utils\Strings;
 use Nette\Security\IIdentity;
-use Nette\Security\IAuthenticator;
+use Nette\Security\IdentityHandler;
+use Nette\Security\Authenticator as AuthenticatorInterface;
 use Nette\Security\AuthenticationException;
 use SixtyEightPublishers\User\Common\Exception\InvalidArgumentException;
 
-final class AuthenticatorMount implements IAuthenticator
+final class AuthenticatorMount implements AuthenticatorInterface, IdentityHandler
 {
-	use SmartObject;
-
 	public const SEPARATOR = '://';
 
-	/** @var \Nette\Security\IAuthenticator[] */
-	private $authenticators;
+	/** @var array<AuthenticatorInterface> */
+	private array $authenticators = [];
 
 	/**
-	 * @param \Nette\Security\IAuthenticator[] $authenticators
+	 * @param array<AuthenticatorInterface> $authenticators
 	 */
-	public function __construct(array $authenticators)
-	{
+	public function __construct(
+		array $authenticators,
+		private readonly IdentityHandler $identityHandler
+	) {
 		foreach ($authenticators as $name => $authenticator) {
 			$this->addAuthenticator((string) $name, $authenticator);
 		}
 	}
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function authenticate(array $credentials): IIdentity
+	public function authenticate(string $username, string $password): IIdentity
 	{
-		if (!isset($credentials[self::USERNAME])) {
-			throw new AuthenticationException(sprintf(
-				'Missing username field in credentials (key %s)',
-				self::USERNAME
-			), self::FAILURE);
-		}
-
-		[ $prefix, $username ] = $this->getPrefixAndUsername($credentials[self::USERNAME]);
+		[ $prefix, $username ] = $this->getPrefixAndUsername($username);
 
 		try {
 			$authenticator = $this->getAuthenticator($prefix);
@@ -50,18 +40,23 @@ final class AuthenticatorMount implements IAuthenticator
 			throw new AuthenticationException($e->getMessage(), self::FAILURE, $e);
 		}
 
-		$credentials[self::USERNAME] = $username;
+		return $authenticator->authenticate($username, $password);
+	}
 
-		return $authenticator->authenticate($credentials);
+	public function sleepIdentity(IIdentity $identity): IIdentity
+	{
+		return $this->identityHandler->sleepIdentity($identity);
+	}
+
+	public function wakeupIdentity(IIdentity $identity): ?IIdentity
+	{
+		return $this->identityHandler->wakeupIdentity($identity);
 	}
 
 	/**
-	 * @param string $name
-	 *
-	 * @return \Nette\Security\IAuthenticator
 	 * @throws \SixtyEightPublishers\User\Common\Exception\InvalidArgumentException
 	 */
-	public function getAuthenticator(string $name): IAuthenticator
+	public function getAuthenticator(string $name): AuthenticatorInterface
 	{
 		if (!isset($this->authenticators[$name])) {
 			throw new InvalidArgumentException(sprintf(
@@ -73,22 +68,11 @@ final class AuthenticatorMount implements IAuthenticator
 		return $this->authenticators[$name];
 	}
 
-	/**
-	 * @param string                         $name
-	 * @param \Nette\Security\IAuthenticator $authenticator
-	 *
-	 * @return void
-	 */
-	private function addAuthenticator(string $name, IAuthenticator $authenticator): void
+	private function addAuthenticator(string $name, AuthenticatorInterface $authenticator): void
 	{
 		$this->authenticators[$name] = $authenticator;
 	}
 
-	/**
-	 * @param string $username
-	 *
-	 * @return array
-	 */
 	private function getPrefixAndUsername(string $username): array
 	{
 		if (Strings::contains($username, self::SEPARATOR)) {

@@ -28,7 +28,6 @@ final class UserBundleExtension extends CompilerExtension implements DatabaseTyp
 	{
 		$this->extensions = [
 			'common' => new CommonExtension(),
-			'doctrine_identity' => new DoctrineIdentityExtension(),
 			'forgot_password' => new ForgotPasswordExtension(),
 			'authentication' => new AuthenticationExtension(),
 		];

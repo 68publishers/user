@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace SixtyEightPublishers\User\Authentication\Authenticator;
 
-use Nette\SmartObject;
 use Nette\Security\IIdentity;
-use Nette\Security\IAuthenticator;
+use Nette\Security\IdentityHandler;
+use Nette\Security\Authenticator as AuthenticatorInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Nette\Security\AuthenticationException;
 use Doctrine\DBAL\Exception as DBALException;
@@ -14,32 +14,16 @@ use SixtyEightPublishers\User\Authentication\Entity\UserInterface;
 use SixtyEightPublishers\DoctrineQueryObjects\ExecutableQueryObjectFactoryInterface;
 use SixtyEightPublishers\User\Authentication\Query\AuthenticatorQueryObjectFactoryInterface;
 
-final class Authenticator implements IAuthenticator
+final class Authenticator implements AuthenticatorInterface, IdentityHandler
 {
-	use SmartObject;
+	public function __construct(
+		private readonly ExecutableQueryObjectFactoryInterface $executableQueryObjectFactory,
+		private readonly AuthenticatorQueryObjectFactoryInterface $authenticatorQueryFactory,
+		private readonly IdentityHandler $identityHandler,
+	) {}
 
-	/** @var \SixtyEightPublishers\DoctrineQueryObjects\ExecutableQueryObjectFactoryInterface  */
-	private $executableQueryObjectFactory;
-
-	/** @var \SixtyEightPublishers\User\Authentication\Query\AuthenticatorQueryObjectFactoryInterface  */
-	private $authenticatorQueryFactory;
-
-	/**
-	 * @param \SixtyEightPublishers\DoctrineQueryObjects\ExecutableQueryObjectFactoryInterface         $executableQueryObjectFactory
-	 * @param \SixtyEightPublishers\User\Authentication\Query\AuthenticatorQueryObjectFactoryInterface $authenticatorQueryFactory
-	 */
-	public function __construct(ExecutableQueryObjectFactoryInterface $executableQueryObjectFactory, AuthenticatorQueryObjectFactoryInterface $authenticatorQueryFactory)
+	public function authenticate(string $username, string $password): IIdentity
 	{
-		$this->executableQueryObjectFactory = $executableQueryObjectFactory;
-		$this->authenticatorQueryFactory = $authenticatorQueryFactory;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function authenticate(array $credentials): IIdentity
-	{
-		[ $username, $password ] = $this->validateCredentials($credentials);
 		$user = $this->findUser($username);
 
 		if (null === $user->getPassword() || !$user->getPassword()->verify($password)) {
@@ -52,32 +36,14 @@ final class Authenticator implements IAuthenticator
 		return $user;
 	}
 
-	/**
-	 * @param array $credentials
-	 *
-	 * @return array
-	 * @throws \Nette\Security\AuthenticationException
-	 */
-	private function validateCredentials(array $credentials): array
+	public function sleepIdentity(IIdentity $identity): IIdentity
 	{
-		if (!isset($credentials[self::USERNAME])) {
-			throw new AuthenticationException(sprintf(
-				'Missing username field in credentials (key %s)',
-				self::USERNAME
-			), self::FAILURE);
-		}
+		return $this->identityHandler->sleepIdentity($identity);
+	}
 
-		if (!isset($credentials[self::PASSWORD])) {
-			throw new AuthenticationException(sprintf(
-				'Missing password field in credentials (key %s)',
-				self::PASSWORD
-			), self::FAILURE);
-		}
-
-		return [
-			(string) $credentials[self::USERNAME],
-			(string) $credentials[self::PASSWORD],
-		];
+	public function wakeupIdentity(IIdentity $identity): ?IIdentity
+	{
+		return $this->identityHandler->wakeupIdentity($identity);
 	}
 
 	/**
