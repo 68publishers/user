@@ -42,7 +42,7 @@ final class Authenticator implements IAuthenticator
 		[ $username, $password ] = $this->validateCredentials($credentials);
 		$user = $this->findUser($username);
 
-		if (!$user->getPassword()->verify($password)) {
+		if (null === $user->getPassword() || !$user->getPassword()->verify($password)) {
 			throw new AuthenticationException(sprintf(
 				'Invalid password for user "%s"',
 				$username
