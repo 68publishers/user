@@ -26,9 +26,9 @@
 		"nette/forms": "^3.0",
 		"nette/http": "^3.0",
 		"nette/security": "^3.0",
-		"nette/utils": "^3.0",
+		"nette/utils": "^3.0 || ^4.0",
 		"ramsey/uuid": "^4.1",
-		"symfony/event-dispatcher": "^5.1 || ^6.0",
+		"symfony/event-dispatcher": "^5.1 || ^6.0 || ^7.0",
 		"tracy/tracy": "^2.6"
 	},
 	"require-dev": {
