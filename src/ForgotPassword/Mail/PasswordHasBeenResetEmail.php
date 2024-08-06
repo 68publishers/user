@@ -35,7 +35,7 @@ final class PasswordHasBeenResetEmail implements PasswordHasBeenResetEmailInterf
 				new SixtyEightPublishers\User\Common\Mail\Address($user->getEmail()),
 			],
 			[
-				'user' => $user,
+				'userEntity' => $user,
 			]
 		);
 	}
