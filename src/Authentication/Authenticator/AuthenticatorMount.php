@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace SixtyEightPublishers\User\Authentication\Authenticator;
 
-use Nette\Utils\Strings;
 use Nette\Security\IIdentity;
 use Nette\Security\IdentityHandler;
-use Nette\Security\Authenticator as AuthenticatorInterface;
 use Nette\Security\AuthenticationException;
+use Nette\Security\Authenticator as AuthenticatorInterface;
 use SixtyEightPublishers\User\Common\Exception\InvalidArgumentException;
 
 final class AuthenticatorMount implements AuthenticatorInterface, IdentityHandler
@@ -37,7 +36,7 @@ final class AuthenticatorMount implements AuthenticatorInterface, IdentityHandle
 		try {
 			$authenticator = $this->getAuthenticator($prefix);
 		} catch (InvalidArgumentException $e) {
-			throw new AuthenticationException($e->getMessage(), self::FAILURE, $e);
+			throw new AuthenticationException($e->getMessage(), self::Failure, $e);
 		}
 
 		return $authenticator->authenticate($username, $password);
@@ -75,7 +74,7 @@ final class AuthenticatorMount implements AuthenticatorInterface, IdentityHandle
 
 	private function getPrefixAndUsername(string $username): array
 	{
-		if (Strings::contains($username, self::SEPARATOR)) {
+		if (str_contains($username, self::SEPARATOR)) {
 			return explode(self::SEPARATOR, $username, 2);
 		}
 

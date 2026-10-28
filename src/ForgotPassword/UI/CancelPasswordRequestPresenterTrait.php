@@ -12,7 +12,6 @@ use SixtyEightPublishers\User\ForgotPassword\PasswordRequest\PasswordRequestMana
 /**
  * Use in Presenter!
  *
- * @property-read string $action
  * @method void changeAction($action)
  */
 trait CancelPasswordRequestPresenterTrait
@@ -40,7 +39,7 @@ trait CancelPasswordRequestPresenterTrait
 		/** @noinspection PhpUndefinedClassInspection */
 		parent::startup();
 
-		if ($this->action !== 'default') {
+		if ($this->getAction() !== 'default') {
 			$this->changeAction('default');
 		}
 	}

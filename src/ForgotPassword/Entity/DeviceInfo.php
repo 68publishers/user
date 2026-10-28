@@ -7,30 +7,19 @@ namespace SixtyEightPublishers\User\ForgotPassword\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use DeviceDetector\DeviceDetector;
 
-/**
- * @ORM\Embeddable
- */
+#[ORM\Embeddable]
 final class DeviceInfo
 {
-	/**
-	 * @ORM\Column(type="string", length=45)
-	 *
-	 * @var string
-	 */
+	/** @var string */
+	#[ORM\Column(type: 'string', length: 45)]
 	private $ip = '';
 
-	/**
-	 * @ORM\Column(type="string", length=100)
-	 *
-	 * @var string
-	 */
+	/** @var string */
+	#[ORM\Column(type: 'string', length: 100)]
 	private $os = '';
 
-	/**
-	 * @ORM\Column(type="string", length=100)
-	 *
-	 * @var string
-	 */
+	/** @var string */
+	#[ORM\Column(type: 'string', length: 100)]
 	private $userAgent = '';
 
 	/**
@@ -38,13 +27,10 @@ final class DeviceInfo
 	 */
 	public function fill(): void
 	{
-		$this->ip = $_SERVER['HTTP_CLIENT_IP'] ?? ($_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR']);
+		$ip = $_SERVER['HTTP_CLIENT_IP'] ?? $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? '';
+		$this->ip = trim(explode(',', $ip)[0]); # the first address of X-Forwarded-For is the client
 
-		static $detector = NULL;
-		if (NULL === $detector) {
-			$detector = new DeviceDetector($_SERVER['HTTP_USER_AGENT']);
-			$detector->parse();
-		}
+		$detector = new DeviceDetector($_SERVER['HTTP_USER_AGENT'] ?? '');
 		$detector->parse();
 		$this->os = sprintf(
 			'%s %s %s',

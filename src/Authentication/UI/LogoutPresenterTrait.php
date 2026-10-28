@@ -21,7 +21,7 @@ use SixtyEightPublishers\User\Authentication\Csrf\CsrfTokenFactoryInterface;
  * </code>
  *
  *
- * @method User getUser()
+ * @method User  getUser()
  * @method mixed getParameter($key)
  * @method
  */

@@ -13,7 +13,6 @@ use SixtyEightPublishers\User\Common\DI\CommonExtension;
 use SixtyEightPublishers\User\Authentication\DI\AuthenticationExtension;
 use SixtyEightPublishers\User\Common\Exception\StopPropagationException;
 use SixtyEightPublishers\User\ForgotPassword\DI\ForgotPasswordExtension;
-use SixtyEightPublishers\User\DoctrineIdentity\DI\DoctrineIdentityExtension;
 use SixtyEightPublishers\DoctrineBridge\Bridge\Nette\DI\DatabaseTypeProviderInterface;
 use SixtyEightPublishers\DoctrineBridge\Bridge\Nette\DI\TargetEntityProviderInterface;
 use SixtyEightPublishers\DoctrineBridge\Bridge\Nette\DI\EntityMappingProviderInterface;

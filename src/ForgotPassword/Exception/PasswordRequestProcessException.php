@@ -25,7 +25,7 @@ final class PasswordRequestProcessException extends RuntimeException
 	 * @param int             $code
 	 * @param \Throwable|null $previous
 	 */
-	public function __construct($uid, $rid, string $message, int $code = 0, Throwable $previous = NULL)
+	public function __construct($uid, $rid, string $message, int $code = 0, ?Throwable $previous = NULL)
 	{
 		parent::__construct($message, $code, $previous);
 

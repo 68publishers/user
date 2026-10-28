@@ -51,7 +51,7 @@ final class PasswordType extends StringType implements ContainerAwareTypeInterfa
 	{
 		$value = parent::convertToPHPValue($value, $platform);
 
-		return null !== $value ? new Password($value, FALSE) : null;
+		return NULL !== $value ? new Password($value, FALSE) : NULL;
 	}
 
 	/**

@@ -11,61 +11,38 @@ use Ramsey\Uuid\UuidInterface;
 use Doctrine\ORM\Mapping as ORM;
 use SixtyEightPublishers\User\Common\Exception\InvalidArgumentException;
 
-/**
- * @ORM\Entity
- * @ORM\HasLifecycleCallbacks
- */
+#[ORM\Entity]
+#[ORM\HasLifecycleCallbacks]
 class PasswordRequest implements PasswordRequestInterface
 {
-	/**
-	 * @ORM\Id
-	 * @ORM\Column(type="uuid", unique=true)
-	 *
-	 * @var \Ramsey\Uuid\UuidInterface
-	 */
+	/** @var \Ramsey\Uuid\UuidInterface */
+	#[ORM\Id]
+	#[ORM\Column(type: 'uuid', unique: TRUE)]
 	private $id;
 
-	/**
-	 * @ORM\Column(type="string", length=15)
-	 *
-	 * @var string
-	 */
+	/** @var string */
+	#[ORM\Column(type: 'string', length: 15)]
 	private $status;
 
-	/**
-	 * @ORM\Column(type="datetime")
-	 *
-	 * @var \DateTime
-	 */
+	/** @var \DateTime */
+	#[ORM\Column(type: 'datetime')]
 	private $created;
 
-	/**
-	 * @ORM\Column(type="datetime")
-	 *
-	 * @var \DateTime
-	 */
+	/** @var \DateTime */
+	#[ORM\Column(type: 'datetime')]
 	private $updated;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="UserInterface")
-	 * @ORM\JoinColumn(onDelete="CASCADE")
-	 *
-	 * @var \SixtyEightPublishers\User\ForgotPassword\Entity\UserInterface
-	 */
+	/** @var \SixtyEightPublishers\User\ForgotPassword\Entity\UserInterface */
+	#[ORM\ManyToOne(targetEntity: UserInterface::class)]
+	#[ORM\JoinColumn(onDelete: 'CASCADE')]
 	private $user;
 
-	/**
-	 * @ORM\Embedded(class="DeviceInfo", columnPrefix="request_")
-	 *
-	 * @var \SixtyEightPublishers\User\ForgotPassword\Entity\DeviceInfo
-	 */
+	/** @var \SixtyEightPublishers\User\ForgotPassword\Entity\DeviceInfo */
+	#[ORM\Embedded(class: DeviceInfo::class, columnPrefix: 'request_')]
 	private $requestDeviceInfo;
 
-	/**
-	 * @ORM\Embedded(class="DeviceInfo", columnPrefix="reset_")
-	 *
-	 * @var \SixtyEightPublishers\User\ForgotPassword\Entity\DeviceInfo
-	 */
+	/** @var \SixtyEightPublishers\User\ForgotPassword\Entity\DeviceInfo */
+	#[ORM\Embedded(class: DeviceInfo::class, columnPrefix: 'reset_')]
 	private $resetDeviceInfo;
 
 	/** @var string  */
@@ -89,14 +66,14 @@ class PasswordRequest implements PasswordRequestInterface
 
 	/**
 	 * @internal
-	 * @ORM\PreUpdate
 	 *
 	 * @return void
 	 * @throws \Exception
 	 */
+	#[ORM\PreUpdate]
 	public function onPreUpdate(): void
 	{
-		$this->updated = new DateTime('now');
+		$this->updated = new DateTime('now', new DateTimeZone('UTC'));
 	}
 
 	/**

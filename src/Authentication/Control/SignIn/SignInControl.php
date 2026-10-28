@@ -6,9 +6,9 @@ namespace SixtyEightPublishers\User\Authentication\Control\SignIn;
 
 use Nette\Security\User;
 use Nette\Application\UI\Form;
-use Nette\Security\IAuthenticator;
-use Nette\Security\AuthenticationException;
 use Nette\Application\UI\Control;
+use Nette\Security\Authenticator;
+use Nette\Security\AuthenticationException;
 use SixtyEightPublishers\User\Common\Logger\LoggerInterface;
 use SixtyEightPublishers\TranslationBridge\TranslatorAwareTrait;
 use SixtyEightPublishers\TranslationBridge\TranslatorAwareInterface;
@@ -139,7 +139,7 @@ final class SignInControl extends Control implements TranslatorAwareInterface
 			$this->user->login($username, $password);
 			$this->onLoggedIn();
 		} catch (AuthenticationException $e) {
-			if (IAuthenticator::FAILURE === $e->getCode()) {
+			if (Authenticator::Failure === $e->getCode()) {
 				$this->logger->error((string) $e);
 			}
 
