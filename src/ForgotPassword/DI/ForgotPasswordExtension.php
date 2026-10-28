@@ -6,15 +6,15 @@ namespace SixtyEightPublishers\User\ForgotPassword\DI;
 
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
+use Nette\PhpGenerator\Literal;
 use Nette\PhpGenerator\ClassType;
-use Nette\PhpGenerator\PhpLiteral;
 use SixtyEightPublishers\User\Common\DI\CommonExtension;
 use SixtyEightPublishers\User\DI\AbstractCompilerExtensionPass;
 use SixtyEightPublishers\User\ForgotPassword\Entity\UserInterface;
 use SixtyEightPublishers\User\ForgotPassword\Entity\PasswordRequest;
 use SixtyEightPublishers\DoctrineBridge\Bridge\Nette\DI\TargetEntity;
-use SixtyEightPublishers\User\Common\Exception\ConfigurationException;
 use SixtyEightPublishers\DoctrineBridge\Bridge\Nette\DI\EntityMapping;
+use SixtyEightPublishers\User\Common\Exception\ConfigurationException;
 use SixtyEightPublishers\User\ForgotPassword\Mail\ForgotPasswordResetEmail;
 use SixtyEightPublishers\User\ForgotPassword\Mail\PasswordHasBeenResetEmail;
 use SixtyEightPublishers\User\ForgotPassword\Entity\PasswordRequestInterface;
@@ -26,10 +26,10 @@ use SixtyEightPublishers\User\ForgotPassword\PasswordRequest\PasswordRequestFact
 use SixtyEightPublishers\User\ForgotPassword\PasswordRequest\PasswordRequestManager;
 use SixtyEightPublishers\User\ForgotPassword\Mail\PasswordHasBeenResetEmailInterface;
 use SixtyEightPublishers\DoctrineBridge\Bridge\Nette\DI\TargetEntityProviderInterface;
-use SixtyEightPublishers\User\ForgotPassword\Query\FindPasswordRequestByIdsQueryObject;
 use SixtyEightPublishers\DoctrineBridge\Bridge\Nette\DI\EntityMappingProviderInterface;
-use SixtyEightPublishers\User\ForgotPassword\Control\ResetPassword\ResetPasswordControl;
+use SixtyEightPublishers\User\ForgotPassword\Query\FindPasswordRequestByIdsQueryObject;
 use SixtyEightPublishers\TranslationBridge\Bridge\Nette\DI\TranslationProviderInterface;
+use SixtyEightPublishers\User\ForgotPassword\Control\ResetPassword\ResetPasswordControl;
 use SixtyEightPublishers\User\ForgotPassword\Control\ForgotPassword\ForgotPasswordControl;
 use SixtyEightPublishers\User\ForgotPassword\Query\CancelPasswordRequestsByUserQueryObject;
 use SixtyEightPublishers\User\ForgotPassword\Mail\ForgotPasswordNotRegisteredEmailInterface;
@@ -143,7 +143,7 @@ final class ForgotPasswordExtension extends AbstractCompilerExtensionPass implem
 	public function afterCompile(ClassType $class): void
 	{
 		$this->getInitialization()->addBody('?::setExpirationString(?);', [
-			new PhpLiteral(PasswordRequest::class),
+			new Literal(PasswordRequest::class),
 			(string) $this->config->request_expiration,
 		]);
 	}
@@ -154,7 +154,7 @@ final class ForgotPasswordExtension extends AbstractCompilerExtensionPass implem
 	public function getEntityMappings(): array
 	{
 		return [
-			new EntityMapping(EntityMapping::DRIVER_ANNOTATION, 'SixtyEightPublishers\User\ForgotPassword\Entity', __DIR__ . '/../Entity'),
+			new EntityMapping(EntityMapping::DRIVER_ATTRIBUTE, 'SixtyEightPublishers\User\ForgotPassword\Entity', __DIR__ . '/../Entity'),
 		];
 	}
 

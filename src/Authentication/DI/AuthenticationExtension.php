@@ -6,10 +6,10 @@ namespace SixtyEightPublishers\User\Authentication\DI;
 
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
-use Nette\Security\IAuthenticator;
-use Nette\DI\Definitions\Statement;
 use Nette\DI\Definitions\Reference;
+use Nette\DI\Definitions\Statement;
 use SixtyEightPublishers\User\Common\DI\CommonExtension;
+use Nette\Security\Authenticator as AuthenticatorInterface;
 use SixtyEightPublishers\User\DI\AbstractCompilerExtensionPass;
 use SixtyEightPublishers\User\Authentication\Entity\UserInterface;
 use SixtyEightPublishers\User\Authentication\Csrf\CsrfTokenFactory;
@@ -76,10 +76,10 @@ final class AuthenticationExtension extends AbstractCompilerExtensionPass implem
 
 		$builder->addDefinition($this->prefix('identity_handler'))
 			->setType(IdentityHandler::class)
-			->setAutowired(false);
+			->setAutowired(FALSE);
 
 		$builder->addDefinition($this->prefix('authenticator'))
-			->setType(IAuthenticator::class)
+			->setType(AuthenticatorInterface::class)
 			->setFactory($this->config->authenticator, [
 				'identityHandler' => new Reference($this->prefix('identity_handler')),
 			]);

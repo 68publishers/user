@@ -11,7 +11,7 @@ final class Password implements PasswordInterface
 
 	/**
 	 * @param string $password
-	 * @param bool        $rehash
+	 * @param bool   $rehash
 	 */
 	public function __construct(string $password, bool $rehash = TRUE)
 	{

@@ -6,10 +6,10 @@ namespace SixtyEightPublishers\User\Authentication\Authenticator;
 
 use Nette\Security\IIdentity;
 use Nette\Security\IdentityHandler;
-use Nette\Security\Authenticator as AuthenticatorInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Nette\Security\AuthenticationException;
 use Doctrine\DBAL\Exception as DBALException;
+use Nette\Security\Authenticator as AuthenticatorInterface;
 use SixtyEightPublishers\User\Authentication\Entity\UserInterface;
 use SixtyEightPublishers\DoctrineQueryObjects\ExecutableQueryObjectFactoryInterface;
 use SixtyEightPublishers\User\Authentication\Query\AuthenticatorQueryObjectFactoryInterface;
@@ -20,17 +20,18 @@ final class Authenticator implements AuthenticatorInterface, IdentityHandler
 		private readonly ExecutableQueryObjectFactoryInterface $executableQueryObjectFactory,
 		private readonly AuthenticatorQueryObjectFactoryInterface $authenticatorQueryFactory,
 		private readonly IdentityHandler $identityHandler,
-	) {}
+	) {
+	}
 
 	public function authenticate(string $username, string $password): IIdentity
 	{
 		$user = $this->findUser($username);
 
-		if (null === $user->getPassword() || !$user->getPassword()->verify($password)) {
+		if (NULL === $user->getPassword() || !$user->getPassword()->verify($password)) {
 			throw new AuthenticationException(sprintf(
 				'Invalid password for user "%s"',
 				$username
-			), self::INVALID_CREDENTIAL);
+			), self::InvalidCredential);
 		}
 
 		return $user;
@@ -60,12 +61,12 @@ final class Authenticator implements AuthenticatorInterface, IdentityHandler
 			$e = new AuthenticationException(sprintf(
 				'User\'s username field is not unique! Value was "%s"',
 				$username
-			), self::FAILURE, $e);
+			), self::Failure, $e);
 		} catch (DBALException $e) {
 			$e = new AuthenticationException(sprintf(
 				'DBAL throws unexpected exception, username value was "%s"',
 				$username
-			), self::FAILURE, $e);
+			), self::Failure, $e);
 		}
 
 		if (isset($e)) {
@@ -76,7 +77,7 @@ final class Authenticator implements AuthenticatorInterface, IdentityHandler
 			throw new AuthenticationException(sprintf(
 				'User "%s" not found.',
 				$username
-			), self::IDENTITY_NOT_FOUND);
+			), self::IdentityNotFound);
 		}
 
 		return $user;

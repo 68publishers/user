@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SixtyEightPublishers\User\Authentication\IdentityHandler;
 
 use Nette\Security\IIdentity;
@@ -14,8 +16,9 @@ final class IdentityHandler implements IdentityHandlerInterface
 {
 	public function __construct(
 		private readonly EntityManagerInterface $em,
-		private readonly ?EventDispatcherInterface $eventDispatcher = null
-	) {}
+		private readonly ?EventDispatcherInterface $eventDispatcher = NULL
+	) {
+	}
 
 	public function sleepIdentity(IIdentity $identity): IIdentity
 	{
@@ -40,6 +43,6 @@ final class IdentityHandler implements IdentityHandlerInterface
 
 		$this->eventDispatcher?->dispatch(new IdentityNotFoundEvent($identity));
 
-		return null;
+		return NULL;
 	}
 }

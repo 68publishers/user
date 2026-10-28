@@ -10,8 +10,8 @@ use SixtyEightPublishers\TranslationBridge\TranslatorAwareTrait;
 use SixtyEightPublishers\TranslationBridge\TranslatorAwareInterface;
 use SixtyEightPublishers\User\ForgotPassword\Entity\PasswordRequestInterface;
 use SixtyEightPublishers\User\ForgotPassword\Exception\PasswordRequestCreationException;
-use SixtyEightPublishers\User\ForgotPassword\PasswordRequest\PasswordRequestSenderInterface;
 use SixtyEightPublishers\SmartNetteComponent\Bridge\Nette\Application\TemplateResolverTrait;
+use SixtyEightPublishers\User\ForgotPassword\PasswordRequest\PasswordRequestSenderInterface;
 
 /**
  * @method void onSend(string $email, ?PasswordRequestInterface $passwordRequest)

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SixtyEightPublishers\User\Authentication\Event;
 
 use Nette\Security\IIdentity;

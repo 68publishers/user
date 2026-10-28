@@ -1,0 +1,37 @@
+# a typical application configuration
+services:
+	-
+		type: Doctrine\ORM\EntityManagerInterface
+		factory: SixtyEightPublishers\User\Tests\Fixtures\ServiceStubs::entityManager
+	-
+		type: SixtyEightPublishers\DoctrinePersistence\TransactionFactoryInterface
+		factory: SixtyEightPublishers\User\Tests\Fixtures\ServiceStubs::transactionFactory
+	-
+		type: SixtyEightPublishers\DoctrineQueryObjects\ExecutableQueryObjectFactoryInterface
+		factory: SixtyEightPublishers\User\Tests\Fixtures\ServiceStubs::executableQueryObjectFactory
+	-
+		type: Contributte\Mailing\IMailBuilderFactory
+		factory: SixtyEightPublishers\User\Tests\Fixtures\ServiceStubs::mailBuilderFactory
+
+user:
+	common:
+		user:
+			class: SixtyEightPublishers\User\Tests\Fixtures\User
+			fields:
+				SixtyEightPublishers\User\Common\UserMapping::FIELD_USERNAME: email
+
+		mail_sender: SixtyEightPublishers\User\Common\Mail\DefaultMailSender(%tempDir%, SixtyEightPublishers\User\Common\Mail\Address('info@example.com', 'Example'), [
+			forgot_password_reset_email: 'Forgotten password'
+			forgot_password_not_registered_email: 'Forgotten password (not registered user)'
+			password_has_been_reset_email: 'Password has been reset'
+		])
+
+	forgot_password:
+		enabled: yes
+		register_controls: yes
+		send_email_for_not_registered_users: no
+		request_expiration: '2 hours'
+
+	authentication:
+		enabled: yes
+		register_controls: yes
